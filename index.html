@@ -104,6 +104,25 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    border: 2px solid var(--glass-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
   }
 
   nav ul {
@@ -418,7 +437,10 @@
 
 <header>
   <div class="nav-container">
-    <div class="logo">MRNOKK's Blog</div>
+    <div class="logo">
+      <div class="avatar">MR</div>
+      <span>MRNOKK's Blog</span>
+    </div>
     <nav aria-label="主导航">
       <ul>
         <li><a href="#home">首页</a></li>

@@ -40,7 +40,8 @@
     padding: 1rem 2rem;
   }
   .nav-container { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-  .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(90deg,var(--accent),var(--accent-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+  .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(90deg,var(--accent),var(--accent-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; color: #fff; border: 2px solid var(--glass-border); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); flex-shrink: 0; }
   .back-btn { color: var(--muted); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
   .back-btn:hover { color: var(--text); }
 
@@ -107,7 +108,10 @@
 <header>
   <div class="nav-container">
     <a href="index.html" class="back-btn">← 返回首页</a>
-    <a href="index.html" class="logo">MRNOKK's Blog</a>
+    <a href="index.html" class="logo">
+      <div class="avatar">MR</div>
+      <span>MRNOKK's Blog</span>
+    </a>
   </div>
 </header>
 
