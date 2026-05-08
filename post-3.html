@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML/CSS 入门指南 · MRNOKK's Blog</title>
+<style>
+  :root {
+    --accent: #e07b58;
+    --accent-hover: #f5a623;
+    --glass-bg: rgba(255,255,255,0.07);
+    --glass-bg-hover: rgba(255,255,255,0.11);
+    --glass-border: rgba(255,255,255,0.13);
+    --glass-blur: blur(16px);
+    --text: #f0ede8;
+    --muted: rgba(240,237,232,0.55);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--text); line-height: 1.7; min-height: 100vh; overflow-x: hidden;
+  }
+  .bg-wrap { position: fixed; inset: 0; z-index: -1; background: linear-gradient(135deg,#0f0c29 0%,#1e1b4b 40%,#2d1b69 70%,#1a0533 100%); }
+  .bg-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.3; }
+  .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle,#e07b58,transparent); top: -150px; left: -120px; animation: drift 12s ease-in-out infinite; }
+  .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle,#6c63ff,transparent); bottom: -100px; right: -100px; animation: drift 10s ease-in-out infinite reverse; }
+  .orb-3 { width: 300px; height: 300px; background: radial-gradient(circle,#11998e,transparent); top: 45%; left: 55%; animation: drift 14s ease-in-out infinite; animation-delay: -5s; }
+  @keyframes drift { 0%,100% { transform:translate(0,0); } 33% { transform:translate(25px,-20px); } 66% { transform:translate(-18px,18px); } }
+  @media (prefers-reduced-motion:reduce) { .bg-orb { animation:none; } }
+
+  header { position: sticky; top: 0; z-index: 100; background: rgba(15,12,41,0.55); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); padding: 1rem 2rem; }
+  .nav-container { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(90deg,var(--accent),var(--accent-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+  .back-btn { color: var(--muted); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+  .back-btn:hover { color: var(--text); }
+
+  .post-wrap { max-width: 820px; margin: 0 auto; padding: 3rem 2rem 2rem; }
+  .post-hero { text-align: center; margin-bottom: 2rem; }
+  .post-tag { background: rgba(224,123,88,0.16); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; border: 1px solid rgba(224,123,88,0.28); display: inline-block; margin-bottom: 1rem; }
+  .post-hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.25; margin-bottom: 1rem; background: linear-gradient(135deg,#ffffff 0%,rgba(240,237,232,0.7) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .post-info { display: flex; justify-content: center; gap: 1.5rem; color: var(--muted); font-size: 0.85rem; }
+
+  .post-content { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2.5rem 3rem; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+  .post-content h2 { font-size: 1.45rem; font-weight: 700; margin: 2.2rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .post-content h2:first-child { margin-top: 0; }
+  .post-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.6rem 0 0.75rem; color: rgba(240,237,232,0.9); }
+  .post-content p { color: rgba(240,237,232,0.78); line-height: 1.85; margin-bottom: 1.2rem; font-size: 1rem; }
+  .post-content ul, .post-content ol { color: rgba(240,237,232,0.78); padding-left: 1.6rem; margin-bottom: 1.2rem; }
+  .post-content li { margin-bottom: 0.45rem; line-height: 1.75; }
+  .post-content strong { color: var(--text); font-weight: 600; }
+  .post-content em { font-style: italic; }
+  .post-content blockquote { border-left: 3px solid var(--accent); padding: 0.8rem 1.2rem; background: rgba(224,123,88,0.08); border-radius: 0 8px 8px 0; margin: 1.2rem 0; color: rgba(240,237,232,0.75); font-style: italic; }
+  .post-content hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 2rem 0; }
+  .post-content pre { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1.2rem 1.5rem; overflow-x: auto; margin: 1.2rem 0; }
+  .post-content code { font-family: "JetBrains Mono","Fira Code",Consolas,monospace; font-size: 0.87rem; color: #e2e8f0; line-height: 1.7; }
+  .post-content p > code, .post-content li > code { background: rgba(255,255,255,0.1); padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.86rem; color: #fbbf8a; }
+
+  .tip-box { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.4rem 0; color: rgba(240,237,232,0.85); font-size: 0.95rem; line-height: 1.75; }
+  .tip-box strong { color: #a5b4fc; }
+
+  .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .post-nav a { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem 1.4rem; text-decoration: none; cursor: pointer; transition: background 0.2s,border-color 0.2s; display: flex; flex-direction: column; }
+  .post-nav a:hover { background: var(--glass-bg-hover); border-color: rgba(255,255,255,0.2); }
+  .post-nav .nav-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.35rem; }
+  .post-nav .nav-title { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+  .post-nav .next-link { text-align: right; }
+
+  /* ── Progress bar ── */
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-hover)); width: 0%; z-index: 200; transition: width 0.1s linear; }
+
+  /* ── Copy button ── */
+  .pre-wrap { position: relative; }
+  .copy-btn { position: absolute; top: 0.6rem; right: 0.6rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: var(--muted); font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer; transition: background 0.2s, color 0.2s; font-family: inherit; }
+  .copy-btn:hover { background: rgba(255,255,255,0.18); color: var(--text); }
+  .copy-btn.copied { color: #6ee7b7; border-color: #6ee7b7; }
+
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 1rem; }
+
+  @media (max-width: 768px) {
+    .post-hero h1 { font-size: 1.8rem; }
+    .post-content { padding: 1.5rem; }
+    .post-wrap { padding: 2rem 1.2rem; }
+    .post-nav { grid-template-columns: 1fr; }
+    .orb-3 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress" aria-hidden="true"></div>
+
+<div class="bg-wrap" aria-hidden="true">
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+</div>
+
+<header>
+  <div class="nav-container">
+    <a href="index.html" class="back-btn">← 返回首页</a>
+    <a href="index.html" class="logo">MRNOKK's Blog</a>
+  </div>
+</header>
+
+<div class="post-wrap">
+  <div class="post-hero">
+    <div class="post-tag">前端</div>
+    <h1>HTML/CSS 入门指南</h1>
+    <div class="post-info">
+      <span>2026-05-07</span>
+      <span>阅读约 10 分钟</span>
+    </div>
+  </div>
+
+  <div class="post-content">
+
+    <p>如果你是从零开始学习网页开发，这篇文章是为你准备的。我们将从最基础的概念开始，一步步了解 HTML 与 CSS，最终创建一个简洁的导航栏示例。</p>
+
+    <p>你只需要两样东西：<strong>文本编辑器</strong>（推荐 VS Code）和<strong>浏览器</strong>。不需要安装任何环境。</p>
+
+    <h2>HTML 是什么</h2>
+
+    <p>HTML（HyperText Markup Language，超文本标记语言）是网页的<strong>骨架</strong>。它用"标签"来描述页面的结构和内容。</p>
+
+    <p>一个最简单的 HTML 文件长这样：</p>
+
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;我的第一个网页&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;你好，世界！&lt;/h1&gt;
+    &lt;p&gt;这是我的第一个网页。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <p>各部分解释：</p>
+    <ul>
+      <li><code>&lt;!DOCTYPE html&gt;</code>：告诉浏览器这是一个 HTML5 文档</li>
+      <li><code>&lt;html lang="zh-CN"&gt;</code>：根元素，<code>lang</code> 属性指定语言（有助于屏幕阅读器和 SEO）</li>
+      <li><code>&lt;head&gt;</code>：头部区域，包含元数据，不显示在页面上</li>
+      <li><code>&lt;body&gt;</code>：主体区域，所有可见内容放在这里</li>
+    </ul>
+
+    <div class="tip-box">
+      <strong>小技巧：</strong>在 VS Code 中新建 <code>.html</code> 文件，输入 <code>!</code> 然后按 Tab 键，可以自动生成完整的 HTML 模板。
+    </div>
+
+    <h2>常用 HTML 标签</h2>
+
+    <h3>文字与排版</h3>
+
+    <pre><code>&lt;h1&gt;一级标题（最大）&lt;/h1&gt;
+&lt;h2&gt;二级标题&lt;/h2&gt;
+&lt;h3&gt;三级标题&lt;/h3&gt;
+&lt;p&gt;这是一段普通段落文字。&lt;/p&gt;
+&lt;strong&gt;加粗文字&lt;/strong&gt;
+&lt;em&gt;斜体文字&lt;/em&gt;</code></pre>
+
+    <h3>链接与图片</h3>
+
+    <pre><code>&lt;!-- 超链接，target="_blank" 在新标签页打开 --&gt;
+&lt;a href="https://example.com" target="_blank"&gt;点击跳转&lt;/a&gt;
+
+&lt;!-- 图片，alt 属性描述图片内容（提升可访问性） --&gt;
+&lt;img src="photo.jpg" alt="一张风景照片" width="400"&gt;</code></pre>
+
+    <h3>列表</h3>
+
+    <pre><code>&lt;!-- 无序列表（圆点） --&gt;
+&lt;ul&gt;
+    &lt;li&gt;苹果&lt;/li&gt;
+    &lt;li&gt;香蕉&lt;/li&gt;
+    &lt;li&gt;橙子&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- 有序列表（数字） --&gt;
+&lt;ol&gt;
+    &lt;li&gt;第一步：准备食材&lt;/li&gt;
+    &lt;li&gt;第二步：开始烹饪&lt;/li&gt;
+    &lt;li&gt;第三步：装盘享用&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+
+    <h3>结构标签</h3>
+
+    <pre><code>&lt;header&gt;页头区域&lt;/header&gt;
+&lt;nav&gt;导航菜单区域&lt;/nav&gt;
+&lt;main&gt;页面主内容区域&lt;/main&gt;
+&lt;section&gt;内容分区&lt;/section&gt;
+&lt;article&gt;独立文章内容&lt;/article&gt;
+&lt;footer&gt;页脚区域&lt;/footer&gt;
+&lt;div&gt;通用块级容器（占整行）&lt;/div&gt;
+&lt;span&gt;通用行内容器（不换行）&lt;/span&gt;</code></pre>
+
+    <h2>CSS 是什么</h2>
+
+    <p>CSS（Cascading Style Sheets，层叠样式表）是网页的<strong>外观</strong>。它控制颜色、字体、布局、间距等所有视觉效果。</p>
+
+    <p>在 HTML 中引入 CSS 有三种方式：</p>
+
+    <pre><code>&lt;!-- 方式 1：外部 CSS 文件（推荐，利于维护） --&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;
+
+&lt;!-- 方式 2：内部样式（写在 &lt;head&gt; 中） --&gt;
+&lt;style&gt;
+    body { background: #f0f0f0; }
+&lt;/style&gt;
+
+&lt;!-- 方式 3：行内样式（不推荐，难以维护） --&gt;
+&lt;p style="color: red; font-size: 18px;"&gt;红色文字&lt;/p&gt;</code></pre>
+
+    <h2>CSS 选择器</h2>
+
+    <pre><code>/* 标签选择器：匹配所有 &lt;p&gt; 元素 */
+p {
+    color: #333;
+    line-height: 1.6;
+}
+
+/* 类选择器：匹配 class="highlight" 的元素 */
+.highlight {
+    background: yellow;
+    font-weight: bold;
+}
+
+/* ID 选择器：匹配 id="header" 的元素（页面唯一） */
+#header {
+    font-size: 24px;
+    padding: 20px;
+}
+
+/* 后代选择器：nav 内部的 a 元素 */
+nav a {
+    text-decoration: none;
+    color: white;
+}
+
+/* 伪类：鼠标悬停状态 */
+a:hover {
+    color: orange;
+    text-decoration: underline;
+}</code></pre>
+
+    <h2>CSS 盒模型</h2>
+
+    <p>每个 HTML 元素都是一个"盒子"，由四层结构组成：</p>
+
+    <pre><code>┌────────────────────────────┐
+│          margin            │  ← 外边距（与相邻元素的距离）
+│   ┌──────────────────┐     │
+│   │     border       │     │  ← 边框
+│   │  ┌────────────┐  │     │
+│   │  │  padding   │  │     │  ← 内边距（内容与边框的距离）
+│   │  │ ┌────────┐ │  │     │
+│   │  │ │content │ │  │     │  ← 实际内容
+│   │  │ └────────┘ │  │     │
+│   │  └────────────┘  │     │
+│   └──────────────────┘     │
+└────────────────────────────┘</code></pre>
+
+    <pre><code>.card {
+    width: 300px;           /* 内容宽度 */
+    padding: 20px;          /* 内边距（四边相同） */
+    border: 2px solid #333; /* 边框 */
+    margin: 16px auto;      /* 外边距（auto 实现水平居中） */
+    box-sizing: border-box; /* 让 width 包含 padding 和 border */
+}</code></pre>
+
+    <div class="tip-box">
+      <strong>重要：</strong>始终在 CSS 开头加上 <code>* { box-sizing: border-box; }</code>，让所有元素使用更直观的尺寸计算方式。这是现代 CSS 的标准做法。
+    </div>
+
+    <h2>Flexbox 弹性布局</h2>
+
+    <p>Flexbox 是现代 CSS 中最常用的布局方式，用于在一个方向（水平或垂直）上排列和对齐元素。</p>
+
+    <pre><code>.container {
+    display: flex;                  /* 启用 Flexbox */
+    justify-content: space-between; /* 主轴（水平）对齐 */
+    align-items: center;            /* 交叉轴（垂直）对齐 */
+    gap: 16px;                      /* 子元素间距 */
+    flex-wrap: wrap;                /* 允许换行 */
+}</code></pre>
+
+    <p><code>justify-content</code> 常用值：</p>
+    <ul>
+      <li><code>flex-start</code>：靠左对齐（默认）</li>
+      <li><code>flex-end</code>：靠右对齐</li>
+      <li><code>center</code>：居中对齐</li>
+      <li><code>space-between</code>：两端对齐，间距均等</li>
+      <li><code>space-around</code>：每个元素两侧间距相等</li>
+    </ul>
+
+    <h2>实战：创建导航栏</h2>
+
+    <p>结合以上知识，创建一个完整的响应式导航栏：</p>
+
+    <p><strong>HTML 结构：</strong></p>
+
+    <pre><code>&lt;nav class="navbar"&gt;
+    &lt;div class="logo"&gt;MyBlog&lt;/div&gt;
+    &lt;ul class="nav-links"&gt;
+        &lt;li&gt;&lt;a href="#"&gt;首页&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;文章&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;关于&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+
+    <p><strong>CSS 样式：</strong></p>
+
+    <pre><code>.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: #1a1a2e;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #e07b58;
+}
+
+.nav-links {
+    list-style: none;    /* 去掉圆点 */
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s;  /* 平滑颜色过渡 */
+}
+
+.nav-links a:hover {
+    color: white;
+}</code></pre>
+
+    <h2>下一步学习方向</h2>
+
+    <p>掌握了 HTML 和 CSS 基础后，可以继续深入：</p>
+
+    <ul>
+      <li><strong>CSS Grid</strong>：二维布局系统，适合复杂页面结构</li>
+      <li><strong>响应式设计</strong>：<code>@media</code> 查询，让页面在手机上同样好用</li>
+      <li><strong>CSS 变量</strong>：用 <code>--变量名</code> 统一管理颜色和尺寸</li>
+      <li><strong>JavaScript</strong>：让页面动起来，实现点击、表单、动画等交互</li>
+    </ul>
+
+    <blockquote>推荐工具：VS Code + Live Server 插件。保存文件后浏览器自动刷新，实时看到效果，学习效率大幅提升。</blockquote>
+
+  </div>
+
+  <nav class="post-nav" aria-label="文章导航">
+    <a href="post-2.html">
+      <span class="nav-label">← 上一篇</span>
+      <span class="nav-title">漏洞扫描的基础知识</span>
+    </a>
+    <a href="post-4.html" class="next-link">
+      <span class="nav-label">下一篇 →</span>
+      <span class="nav-title">关于学习的一些思考</span>
+    </a>
+  </nav>
+</div>
+
+<footer>
+  <p>© 2026 MRNOKK's Blog · 用 ❤ 与 HTML 编织</p>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    document.getElementById('progress').style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+  }, { passive: true });
+
+  document.querySelectorAll('pre').forEach(pre => {
+    const wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '复制';
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText).then(() => {
+        btn.textContent = '已复制'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    wrap.appendChild(btn);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的博客 · My Blog</title>
+<style>
+  :root {
+    --accent: #e07b58;
+    --accent-hover: #f5a623;
+    --accent-glow: rgba(224, 123, 88, 0.28);
+    --glass-bg: rgba(255, 255, 255, 0.07);
+    --glass-bg-hover: rgba(255, 255, 255, 0.11);
+    --glass-border: rgba(255, 255, 255, 0.13);
+    --glass-border-hover: rgba(255, 255, 255, 0.22);
+    --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+    --glass-blur: blur(16px);
+    --text: #f0ede8;
+    --muted: rgba(240, 237, 232, 0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background ── */
+  .bg-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, #0f0c29 0%, #1e1b4b 40%, #2d1b69 70%, #1a0533 100%);
+  }
+
+  .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.3;
+  }
+
+  .orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #e07b58 0%, transparent 70%);
+    top: -150px; left: -120px;
+    animation: drift 12s ease-in-out infinite;
+  }
+
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #6c63ff 0%, transparent 70%);
+    bottom: -100px; right: -100px;
+    animation: drift 10s ease-in-out infinite reverse;
+  }
+
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, #11998e 0%, transparent 70%);
+    top: 45%; left: 55%;
+    animation: drift 14s ease-in-out infinite;
+    animation-delay: -5s;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0); }
+    33%       { transform: translate(25px, -20px); }
+    66%       { transform: translate(-18px, 18px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-orb { animation: none; }
+  }
+
+  /* ── Header ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 12, 41, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 2rem;
+  }
+
+  .nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+
+  nav a:hover,
+  nav a:focus-visible { color: var(--text); outline: none; }
+
+  /* ── Hero ── */
+  .hero {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2rem 3rem;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -1.5px;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(240, 237, 232, 0.65) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.75;
+  }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 2.5rem;
+  }
+
+  .posts { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  /* ── Article cards ── */
+  article {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--glass-shadow);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease,
+                border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  article:hover {
+    transform: translateY(-3px);
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35),
+                0 0 24px var(--accent-glow);
+  }
+
+  .post-meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.84rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .tag {
+    background: rgba(224, 123, 88, 0.16);
+    color: var(--accent);
+    padding: 0.18rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid rgba(224, 123, 88, 0.28);
+    letter-spacing: 0.2px;
+  }
+
+  article h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  article > p {
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .read-more {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: gap 0.2s ease, color 0.2s;
+  }
+
+  .read-more:hover { gap: 0.6rem; color: var(--accent-hover); }
+
+  .read-more:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* ── Sidebar ── */
+  aside { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .widget {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .widget h3 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    color: var(--text);
+  }
+
+  .widget p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .widget ul { list-style: none; }
+
+  .widget li {
+    padding: 0.45rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .widget li:last-child { border-bottom: none; }
+
+  .widget a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .widget a:hover { color: var(--text); }
+
+  .widget a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* ── Tags cloud ── */
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tags-cloud span {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    user-select: none;
+  }
+
+  .tags-cloud span:hover,
+  .tags-cloud span.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Search ── */
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 0.55rem 0.9rem 0.55rem 2.2rem;
+    color: var(--text);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: inherit;
+  }
+
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-wrap input:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+
+  /* ── No results ── */
+  .no-results {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    padding: 2rem;
+    font-size: 0.95rem;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    margin-top: 1rem;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--text); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2.2rem; letter-spacing: -1px; }
+    .hero { padding: 3.5rem 1.5rem 2rem; }
+    main { padding: 1.5rem; }
+    nav ul { gap: 1rem; }
+    .orb-1 { width: 280px; height: 280px; }
+    .orb-2 { width: 220px; height: 220px; }
+    .orb-3 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-wrap" aria-hidden="true">
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+</div>
+
+<header>
+  <div class="nav-container">
+    <div class="logo">MRNOKK's Blog</div>
+    <nav aria-label="主导航">
+      <ul>
+        <li><a href="#home">首页</a></li>
+        <li><a href="#posts">文章</a></li>
+        <li><a href="#about">关于</a></li>
+        <li><a href="#contact">联系</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <h1>欢迎来到我的博客</h1>
+  <p>记录学习、生活与思考的点滴 — 关于代码、安全与日常。</p>
+</section>
+
+<main id="posts">
+  <div class="posts">
+
+    <article onclick="location.href='post-1.html'">
+      <div class="post-meta">
+        <span>2026-05-09</span>
+        <span class="tag">技术</span>
+      </div>
+      <h2>开始我的博客之旅</h2>
+      <p>这是博客的第一篇文章。在这里，我会分享我在学习编程、网络安全、以及各种技术领域的心得体会。希望能与大家一起成长。</p>
+      <a href="post-1.html" class="read-more">阅读更多 →</a>
+    </article>
+
+    <article onclick="location.href='post-2.html'">
+      <div class="post-meta">
+        <span>2026-05-08</span>
+        <span class="tag">网络安全</span>
+      </div>
+      <h2>漏洞扫描的基础知识</h2>
+      <p>漏洞扫描是网络安全工作中的重要一环。本文将介绍常见的漏洞扫描工具、扫描流程，以及如何分析扫描结果，帮助初学者快速入门。</p>
+      <a href="post-2.html" class="read-more">阅读更多 →</a>
+    </article>
+
+    <article onclick="location.href='post-3.html'">
+      <div class="post-meta">
+        <span>2026-05-07</span>
+        <span class="tag">前端</span>
+      </div>
+      <h2>HTML/CSS 入门指南</h2>
+      <p>从零开始学习网页开发？这篇文章将带你了解 HTML 与 CSS 的基础知识，并通过实例演示如何创建一个简洁美观的页面。</p>
+      <a href="post-3.html" class="read-more">阅读更多 →</a>
+    </article>
+
+    <article onclick="location.href='post-4.html'">
+      <div class="post-meta">
+        <span>2026-05-05</span>
+        <span class="tag">随笔</span>
+      </div>
+      <h2>关于学习的一些思考</h2>
+      <p>持续学习是程序员的必修课。在快速变化的技术世界里，如何保持学习的动力与方向？分享一些个人的方法论。</p>
+      <a href="post-4.html" class="read-more">阅读更多 →</a>
+    </article>
+
+  </div>
+
+  <aside>
+    <div class="widget" id="about">
+      <h3>关于我</h3>
+      <p>你好，我是 MRNOKK。一个热爱技术、喜欢探索的普通人，专注于网络安全与全栈开发。</p>
+    </div>
+
+    <div class="widget">
+      <h3>近期文章</h3>
+      <ul>
+        <li><a href="post-1.html">开始我的博客之旅</a></li>
+        <li><a href="post-2.html">漏洞扫描的基础知识</a></li>
+        <li><a href="post-3.html">HTML/CSS 入门指南</a></li>
+        <li><a href="post-4.html">关于学习的一些思考</a></li>
+      </ul>
+    </div>
+
+    <div class="widget">
+      <h3>搜索</h3>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="search-input" placeholder="搜索文章…" aria-label="搜索文章">
+      </div>
+    </div>
+
+    <div class="widget">
+      <h3>标签</h3>
+      <div class="tags-cloud">
+        <span data-tag="技术">技术</span>
+        <span data-tag="网络安全">网络安全</span>
+        <span data-tag="前端">前端</span>
+        <span data-tag="随笔">随笔</span>
+        <span data-tag="Python">Python</span>
+        <span data-tag="JavaScript">JavaScript</span>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="no-results" id="no-results">没有找到匹配的文章</div>
+
+<footer id="contact">
+  <div class="footer-links">
+    <a href="mailto:mrnokk@example.com">📧 联系我</a>
+    <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+    <a href="#home">回到顶部 ↑</a>
+  </div>
+  <p>© 2026 MRNOKK's Blog · 用 ❤ 与 HTML 编织</p>
+</footer>
+
+<script>
+  // 标签过滤 + 搜索
+  const articles = document.querySelectorAll('.posts article');
+  const noResults = document.getElementById('no-results');
+
+  function filterArticles() {
+    const activeTag = document.querySelector('.tags-cloud span.active')?.dataset.tag || '';
+    const query = document.getElementById('search-input').value.trim().toLowerCase();
+    let visible = 0;
+    articles.forEach(a => {
+      const tag = a.querySelector('.tag')?.textContent || '';
+      const text = a.textContent.toLowerCase();
+      const tagMatch = !activeTag || tag === activeTag;
+      const searchMatch = !query || text.includes(query);
+      const show = tagMatch && searchMatch;
+      a.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('.tags-cloud span').forEach(span => {
+    span.addEventListener('click', () => {
+      const isActive = span.classList.contains('active');
+      document.querySelectorAll('.tags-cloud span').forEach(s => s.classList.remove('active'));
+      if (!isActive) span.classList.add('active');
+      filterArticles();
+    });
+  });
+
+  document.getElementById('search-input').addEventListener('input', filterArticles);
+
+  // 导航高亮当前区域
+  const navLinks = document.querySelectorAll('nav a');
+  const sections = ['home', 'posts', 'contact'];
+  window.addEventListener('scroll', () => {
+    let current = 'home';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 80) current = id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current
+        ? 'var(--text)' : '';
+    });
+  }, { passive: true });
+</script>
+
+</body>
+</html>

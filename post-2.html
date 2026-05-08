@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漏洞扫描的基础知识 · MRNOKK's Blog</title>
+<style>
+  :root {
+    --accent: #e07b58;
+    --accent-hover: #f5a623;
+    --glass-bg: rgba(255,255,255,0.07);
+    --glass-bg-hover: rgba(255,255,255,0.11);
+    --glass-border: rgba(255,255,255,0.13);
+    --glass-blur: blur(16px);
+    --text: #f0ede8;
+    --muted: rgba(240,237,232,0.55);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--text); line-height: 1.7; min-height: 100vh; overflow-x: hidden;
+  }
+  .bg-wrap { position: fixed; inset: 0; z-index: -1; background: linear-gradient(135deg,#0f0c29 0%,#1e1b4b 40%,#2d1b69 70%,#1a0533 100%); }
+  .bg-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.3; }
+  .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle,#e07b58,transparent); top: -150px; left: -120px; animation: drift 12s ease-in-out infinite; }
+  .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle,#6c63ff,transparent); bottom: -100px; right: -100px; animation: drift 10s ease-in-out infinite reverse; }
+  .orb-3 { width: 300px; height: 300px; background: radial-gradient(circle,#11998e,transparent); top: 45%; left: 55%; animation: drift 14s ease-in-out infinite; animation-delay: -5s; }
+  @keyframes drift { 0%,100% { transform:translate(0,0); } 33% { transform:translate(25px,-20px); } 66% { transform:translate(-18px,18px); } }
+  @media (prefers-reduced-motion:reduce) { .bg-orb { animation:none; } }
+
+  header { position: sticky; top: 0; z-index: 100; background: rgba(15,12,41,0.55); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); padding: 1rem 2rem; }
+  .nav-container { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(90deg,var(--accent),var(--accent-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+  .back-btn { color: var(--muted); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+  .back-btn:hover { color: var(--text); }
+
+  .post-wrap { max-width: 820px; margin: 0 auto; padding: 3rem 2rem 2rem; }
+  .post-hero { text-align: center; margin-bottom: 2rem; }
+  .post-tag { background: rgba(224,123,88,0.16); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; border: 1px solid rgba(224,123,88,0.28); display: inline-block; margin-bottom: 1rem; }
+  .post-hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.25; margin-bottom: 1rem; background: linear-gradient(135deg,#ffffff 0%,rgba(240,237,232,0.7) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .post-info { display: flex; justify-content: center; gap: 1.5rem; color: var(--muted); font-size: 0.85rem; }
+
+  .post-content { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2.5rem 3rem; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+  .post-content h2 { font-size: 1.45rem; font-weight: 700; margin: 2.2rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .post-content h2:first-child { margin-top: 0; }
+  .post-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.6rem 0 0.75rem; color: rgba(240,237,232,0.9); }
+  .post-content p { color: rgba(240,237,232,0.78); line-height: 1.85; margin-bottom: 1.2rem; font-size: 1rem; }
+  .post-content ul, .post-content ol { color: rgba(240,237,232,0.78); padding-left: 1.6rem; margin-bottom: 1.2rem; }
+  .post-content li { margin-bottom: 0.45rem; line-height: 1.75; }
+  .post-content strong { color: var(--text); font-weight: 600; }
+  .post-content em { font-style: italic; }
+  .post-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .post-content blockquote { border-left: 3px solid var(--accent); padding: 0.8rem 1.2rem; background: rgba(224,123,88,0.08); border-radius: 0 8px 8px 0; margin: 1.2rem 0; color: rgba(240,237,232,0.75); font-style: italic; }
+  .post-content hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 2rem 0; }
+  .post-content pre { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1.2rem 1.5rem; overflow-x: auto; margin: 1.2rem 0; }
+  .post-content code { font-family: "JetBrains Mono","Fira Code",Consolas,monospace; font-size: 0.87rem; color: #e2e8f0; line-height: 1.7; }
+  .post-content p > code, .post-content li > code { background: rgba(255,255,255,0.1); padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.86rem; color: #fbbf8a; }
+  .post-content table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: 0.9rem; }
+  .post-content th { background: rgba(255,255,255,0.1); color: var(--text); padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.15); font-weight: 600; }
+  .post-content td { color: rgba(240,237,232,0.75); padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .post-content tr:last-child td { border-bottom: none; }
+
+  .warning-box { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.4rem 0; color: rgba(240,237,232,0.85); font-size: 0.95rem; line-height: 1.75; }
+  .warning-box strong { color: #fde047; }
+
+  .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .post-nav a { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem 1.4rem; text-decoration: none; cursor: pointer; transition: background 0.2s,border-color 0.2s; display: flex; flex-direction: column; }
+  .post-nav a:hover { background: var(--glass-bg-hover); border-color: rgba(255,255,255,0.2); }
+  .post-nav .nav-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.35rem; }
+  .post-nav .nav-title { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+  .post-nav .next-link { text-align: right; }
+
+  /* ── Progress bar ── */
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-hover)); width: 0%; z-index: 200; transition: width 0.1s linear; }
+
+  /* ── Copy button ── */
+  .pre-wrap { position: relative; }
+  .copy-btn { position: absolute; top: 0.6rem; right: 0.6rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: var(--muted); font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer; transition: background 0.2s, color 0.2s; font-family: inherit; }
+  .copy-btn:hover { background: rgba(255,255,255,0.18); color: var(--text); }
+  .copy-btn.copied { color: #6ee7b7; border-color: #6ee7b7; }
+
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 1rem; }
+
+  @media (max-width: 768px) {
+    .post-hero h1 { font-size: 1.8rem; }
+    .post-content { padding: 1.5rem; }
+    .post-wrap { padding: 2rem 1.2rem; }
+    .post-nav { grid-template-columns: 1fr; }
+    .orb-3 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress" aria-hidden="true"></div>
+
+<div class="bg-wrap" aria-hidden="true">
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+</div>
+
+<header>
+  <div class="nav-container">
+    <a href="index.html" class="back-btn">← 返回首页</a>
+    <a href="index.html" class="logo">MRNOKK's Blog</a>
+  </div>
+</header>
+
+<div class="post-wrap">
+  <div class="post-hero">
+    <div class="post-tag">网络安全</div>
+    <h1>漏洞扫描的基础知识</h1>
+    <div class="post-info">
+      <span>2026-05-08</span>
+      <span>阅读约 8 分钟</span>
+    </div>
+  </div>
+
+  <div class="post-content">
+
+    <div class="warning-box">
+      <strong>重要声明：</strong>漏洞扫描必须在获得明确书面授权的情况下进行。对未授权目标进行扫描在大多数国家属于违法行为。本文内容仅用于学习和授权测试环境。
+    </div>
+
+    <p>漏洞扫描是网络安全工作中的核心技能之一。在进行任何安全评估或渗透测试之前，了解目标的攻击面是第一步。本文将系统介绍漏洞扫描的基本概念、常用工具和工作流程。</p>
+
+    <h2>什么是漏洞扫描</h2>
+
+    <p>漏洞扫描（Vulnerability Scanning）是通过自动化工具系统性地检查目标系统、网络或应用，查找<strong>已知安全漏洞</strong>的过程。</p>
+
+    <p>与漏洞利用（Exploitation）不同，扫描本身是发现问题的过程——它告诉你"这里可能存在问题"，而不是去利用这些问题。扫描是渗透测试侦察阶段的核心工作。</p>
+
+    <h2>扫描类型</h2>
+
+    <h3>主动扫描 vs 被动扫描</h3>
+
+    <table>
+      <thead>
+        <tr><th>类型</th><th>方式</th><th>优点</th><th>缺点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>主动扫描</td><td>直接向目标发送数据包</td><td>结果准确全面</td><td>产生流量，可能触发 IDS 告警</td></tr>
+        <tr><td>被动扫描</td><td>监听并分析网络流量</td><td>不影响目标系统</td><td>结果有限，依赖流量</td></tr>
+      </tbody>
+    </table>
+
+    <h3>按目标分类</h3>
+    <ul>
+      <li><strong>网络扫描</strong>：发现开放端口和运行中的服务</li>
+      <li><strong>Web 应用扫描</strong>：检测 SQL 注入、XSS、CSRF 等 Web 漏洞</li>
+      <li><strong>主机扫描</strong>：检查操作系统补丁状态、配置缺陷</li>
+      <li><strong>数据库扫描</strong>：发现数据库配置问题和已知漏洞</li>
+    </ul>
+
+    <h2>常用工具详解</h2>
+
+    <h3>Nmap — 网络探测的瑞士军刀</h3>
+
+    <p>Nmap 是最知名的端口扫描工具，功能强大且免费开源。它可以探测主机存活状态、开放端口、服务版本、操作系统信息等。</p>
+
+    <pre><code># 扫描单个主机的常用端口
+nmap 192.168.1.1
+
+# 详细扫描：服务版本检测 + 默认脚本
+nmap -sV -sC 192.168.1.1
+
+# 扫描整个子网
+nmap 192.168.1.0/24
+
+# 操作系统检测（需要 root/管理员权限）
+sudo nmap -O 192.168.1.1
+
+# 全端口扫描（65535个端口，速度较慢）
+nmap -p- 192.168.1.1
+
+# 组合常用选项，输出到文件
+nmap -sV -sC -oN scan_result.txt 192.168.1.1</code></pre>
+
+    <p>常用扫描类型说明：</p>
+    <ul>
+      <li><code>-sT</code>：TCP 全连接扫描（默认，不需要特权）</li>
+      <li><code>-sS</code>：SYN 半开扫描（更隐蔽，需要 root）</li>
+      <li><code>-sU</code>：UDP 扫描（速度慢，但不能忽略）</li>
+      <li><code>-sn</code>：仅 Ping 扫描，快速探测存活主机</li>
+    </ul>
+
+    <h3>Nikto — Web 服务器扫描</h3>
+
+    <p>Nikto 专门用于扫描 Web 服务器的已知漏洞、危险文件、默认配置和版本信息。</p>
+
+    <pre><code># 基本 Web 服务器扫描
+nikto -h http://target.com
+
+# 扫描特定端口
+nikto -h http://target.com -p 8080
+
+# 生成 HTML 格式报告
+nikto -h http://target.com -o report.html -Format html</code></pre>
+
+    <h3>OpenVAS / Greenbone — 综合漏洞扫描</h3>
+
+    <p>OpenVAS 是企业级的综合漏洞扫描器，拥有超过 50,000 个漏洞检测插件，提供详细的扫描报告和修复建议。适合对整个网络环境进行系统性安全评估。</p>
+
+    <h2>漏洞扫描工作流程</h2>
+
+    <ol>
+      <li><strong>授权确认</strong>：获取目标方书面授权（最重要的一步）</li>
+      <li><strong>范围定义</strong>：明确 IP 范围、域名、端口范围和禁止触碰的系统</li>
+      <li><strong>资产发现</strong>：探测存活主机，建立目标清单</li>
+      <li><strong>端口扫描</strong>：发现各主机开放的服务端口</li>
+      <li><strong>服务识别</strong>：确定端口上运行的服务及版本</li>
+      <li><strong>漏洞检测</strong>：将服务版本与漏洞数据库（CVE）比对</li>
+      <li><strong>结果验证</strong>：手动验证高危发现，过滤误报</li>
+      <li><strong>报告生成</strong>：整理发现，提供修复建议</li>
+    </ol>
+
+    <h2>读懂扫描报告</h2>
+
+    <p>大多数扫描器使用 <strong>CVSS（Common Vulnerability Scoring System，通用漏洞评分系统）</strong> 对漏洞危险程度进行量化评分：</p>
+
+    <table>
+      <thead>
+        <tr><th>CVSS 分值</th><th>危险等级</th><th>处理建议</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>9.0 – 10.0</td><td>Critical（严重）</td><td>立即修复，优先级最高</td></tr>
+        <tr><td>7.0 – 8.9</td><td>High（高危）</td><td>尽快修复，制定紧急计划</td></tr>
+        <tr><td>4.0 – 6.9</td><td>Medium（中危）</td><td>在下一个维护周期修复</td></tr>
+        <tr><td>0.1 – 3.9</td><td>Low（低危）</td><td>按计划处理</td></tr>
+        <tr><td>0</td><td>Info（信息）</td><td>无直接风险，留作参考</td></tr>
+      </tbody>
+    </table>
+
+    <p>分析报告时要注意：</p>
+    <ul>
+      <li><strong>误报</strong>：扫描器不可能 100% 准确，高危漏洞务必手动验证</li>
+      <li><strong>上下文</strong>：同一漏洞在不同环境的实际风险可能大相径庭</li>
+      <li><strong>修复优先级</strong>：结合业务重要性和可利用难度综合排序</li>
+    </ul>
+
+    <h2>学习资源推荐</h2>
+
+    <p>想深入学习漏洞扫描和渗透测试，推荐以下途径：</p>
+    <ul>
+      <li><strong>练习平台</strong>：Hack The Box、TryHackMe（均有免费模式）</li>
+      <li><strong>漏洞靶机</strong>：VulnHub 提供大量可下载的练习虚拟机</li>
+      <li><strong>认证方向</strong>：CEH（入门）、OSCP（注重实战，含考试）</li>
+      <li><strong>书籍</strong>：《渗透测试：黑客实战手册》《Web 应用黑客手册》</li>
+    </ul>
+
+    <blockquote>所有扫描和测试行为都必须在授权环境中进行。在自己搭建的虚拟机实验室或合法的练习平台上练习，是最安全也最有效的学习方式。</blockquote>
+
+  </div>
+
+  <nav class="post-nav" aria-label="文章导航">
+    <a href="post-1.html">
+      <span class="nav-label">← 上一篇</span>
+      <span class="nav-title">开始我的博客之旅</span>
+    </a>
+    <a href="post-3.html" class="next-link">
+      <span class="nav-label">下一篇 →</span>
+      <span class="nav-title">HTML/CSS 入门指南</span>
+    </a>
+  </nav>
+</div>
+
+<footer>
+  <p>© 2026 MRNOKK's Blog · 用 ❤ 与 HTML 编织</p>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    document.getElementById('progress').style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+  }, { passive: true });
+
+  document.querySelectorAll('pre').forEach(pre => {
+    const wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '复制';
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText).then(() => {
+        btn.textContent = '已复制'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    wrap.appendChild(btn);
+  });
+</script>
+</body>
+</html>

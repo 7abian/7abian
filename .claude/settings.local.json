@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(cmd.exe /c \"py --version\")",
+      "Bash(cmd.exe /c \"python --version\")",
+      "Bash(start \"\" \"C:\\\\Users\\\\MRNOKK\\\\Desktop\\\\1\\\\index.html\")",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
