@@ -276,7 +276,7 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 ${htmlContent}
 </div>
 <div style="margin-top:3rem">
-<script src="https://giscus.app/client.js"
+${'<'}script src="https://giscus.app/client.js"
 data-repo="7abian/7abian.github.io"
 data-repo-id="R_kgDOSYQocQ"
 data-category="Announcements"
@@ -296,7 +296,7 @@ async>
 <footer>
 <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
-<script>
+${'<'}script>
 (async()=>{
 try{
 const resp=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+localStorage.getItem('github_token')}});
@@ -312,7 +312,7 @@ async function deletePost(fileName){
 if(!confirm('确定要删除这篇文章吗？此操作不可恢复！'))return;
 try{
 const token=localStorage.getItem('github_token');
-const fileUrl=`https://api.github.com/repos/7abian/7abian.github.io/contents/${fileName}`;
+const fileUrl=\`https://api.github.com/repos/7abian/7abian.github.io/contents/\${fileName}\`;
 const resp=await fetch(fileUrl,{headers:{'Authorization':'token '+token}});
 if(!resp.ok)throw new Error('获取文件信息失败');
 const data=await resp.json();
@@ -322,7 +322,7 @@ const indexResp=await fetch(indexUrl,{headers:{'Authorization':'token '+token}})
 if(indexResp.ok){
 const indexData=await indexResp.json();
 let indexHTML=decodeURIComponent(escape(atob(indexData.content)));
-const regex=new RegExp(`<article[^>]*onclick="location\\.href='${fileName}'[^>]*>[\\s\\S]*?</article>\\s*`,'g');
+const regex=new RegExp(\`<article[^>]*onclick="location\\\\.href='\${fileName}'[^>]*>[\\\\s\\\\S]*?</article>\\\\s*\`,'g');
 indexHTML=indexHTML.replace(regex,'');
 await fetch(indexUrl,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json'},body:JSON.stringify({message:'Remove deleted post from index',content:btoa(unescape(encodeURIComponent(indexHTML))),sha:indexData.sha,branch:'main'})});
 }
