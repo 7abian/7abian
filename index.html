@@ -771,12 +771,7 @@
     if (!target) return;
 
     const words = ['我的博客', '技术笔记', '安全实验室', '思考角落'];
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (reduceMotion) {
-      target.textContent = words[0];
-      return;
-    }
+    target.textContent = '';
 
     let wordIndex = 0;
     let charIndex = 0;
