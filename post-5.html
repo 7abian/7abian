@@ -228,16 +228,44 @@ document.querySelectorAll('pre code').forEach(block => {
 });
 
 (async()=>{
-  try{
-    const resp=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+localStorage.getItem('github_token')}});
-    if(resp.ok){
-      const user=await resp.json();
-      if(user.login==='7abian'){
-        document.querySelectorAll('.admin-only').forEach(el=>el.style.display='flex');
+    try{
+      const token = localStorage.getItem('github_token');
+      console.log('🔍 检查管理员身份');
+      console.log('Token 存在:', !!token);
+      
+      if(!token){
+        console.log('❌ 未找到 GitHub Token');
+        console.log('💡 请先访问 admin.html 页面登录');
+        return;
       }
+      
+      const resp=await fetch('https://api.github.com/user',{
+        headers:{'Authorization':'token '+token}
+      });
+      
+      console.log('📡 GitHub API 响应状态:', resp.status);
+      
+      if(resp.ok){
+        const user=await resp.json();
+        console.log('👤 当前用户:', user.login);
+        
+        if(user.login==='7abian'){
+          console.log('✅ 管理员身份验证成功！');
+          console.log('🔓 显示管理按钮');
+          document.querySelectorAll('.admin-only').forEach(el=>{
+            el.style.display='flex';
+            console.log('按钮已显示:', el);
+          });
+        }else{
+          console.log('⚠️  非管理员用户，按钮保持隐藏');
+        }
+      }else{
+        console.log('❌ GitHub API 请求失败');
+      }
+    }catch(e){
+      console.error('❌ 身份验证错误:', e);
     }
-  }catch(e){}
-})();
+  })();
 
 async function deletePost(fileName){
   if(!confirm('确定要删除这篇文章吗？此操作不可恢复！'))return;
