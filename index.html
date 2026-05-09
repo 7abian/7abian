@@ -448,6 +448,43 @@
   article {
     position: relative;
   }
+  /* 分页样式 */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+  }
+  .pagination button {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    min-width: 40px;
+  }
+  .pagination button:hover:not(:disabled) {
+    background: var(--glass-bg-hover);
+    border-color: var(--accent);
+  }
+  .pagination button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .pagination button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .pagination .page-info {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 1rem;
+  }
 
   @media (max-width: 768px) {
     main { grid-template-columns: 1fr; }
@@ -665,6 +702,13 @@
 
 <div class="no-results" id="no-results">没有找到匹配的文章</div>
 
+
+<div class="pagination" id="pagination">
+  <button id="prevPage" onclick="changePage(-1)">← 上一页</button>
+  <span class="page-info">第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">1</span> 页</span>
+  <button id="nextPage" onclick="changePage(1)">下一页 →</button>
+</div>
+
 <footer id="contact">
   <div class="footer-links">
     <a href="mailto:mrnokk@example.com">📧 联系我</a>
@@ -675,25 +719,69 @@
 </footer>
 
 <script>
-  // 标签过滤 + 搜索
+  // 标签过滤 + 搜索 + 分页
   const articles = document.querySelectorAll('.posts article');
   const noResults = document.getElementById('no-results');
 
-  function filterArticles() {
+  // 分页配置
+  const POSTS_PER_PAGE = 5;
+  let currentPage = 1;
+  let filteredArticles = [];
+
+  function updatePagination() {
+    // 获取当前可见的文章
     const activeTag = document.querySelector('.tags-cloud span.active')?.dataset.tag || '';
     const query = document.getElementById('search-input').value.trim().toLowerCase();
-    let visible = 0;
-    articles.forEach(a => {
+    
+    filteredArticles = Array.from(articles).filter(a => {
       const tag = a.querySelector('.tag')?.textContent || '';
       const text = a.textContent.toLowerCase();
       const tagMatch = !activeTag || tag === activeTag;
       const searchMatch = !query || text.includes(query);
-      const show = tagMatch && searchMatch;
-      a.style.display = show ? '' : 'none';
-      if (show) visible++;
+      return tagMatch && searchMatch;
     });
-    noResults.style.display = visible === 0 ? 'block' : 'none';
+
+    const totalPages = Math.ceil(filteredArticles.length / POSTS_PER_PAGE);
+    
+    // 更新分页信息
+    document.getElementById('currentPage').textContent = currentPage;
+    document.getElementById('totalPages').textContent = totalPages || 1;
+    document.getElementById('prevPage').disabled = currentPage === 1;
+    document.getElementById('nextPage').disabled = currentPage >= totalPages;
+    
+    // 显示/隐藏分页控件
+    document.getElementById('pagination').style.display = totalPages > 1 ? 'flex' : 'none';
+    
+    // 显示当前页的文章
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const endIndex = startIndex + POSTS_PER_PAGE;
+    
+    articles.forEach(a => a.style.display = 'none');
+    filteredArticles.slice(startIndex, endIndex).forEach(a => a.style.display = '');
+    
+    // 显示/隐藏"没有结果"提示
+    noResults.style.display = filteredArticles.length === 0 ? 'block' : 'none';
+    
+    // 滚动到顶部
+    if (window.scrollY > 300) {
+      document.getElementById('posts').scrollIntoView({ behavior: 'smooth' });
+    }
   }
+
+  function changePage(delta) {
+    const totalPages = Math.ceil(filteredArticles.length / POSTS_PER_PAGE);
+    currentPage = Math.max(1, Math.min(currentPage + delta, totalPages));
+    updatePagination();
+  }
+
+  function filterArticles() {
+    currentPage = 1; // 重置到第一页
+    updatePagination();
+  }
+
+  // 初始化分页
+  updatePagination();
+
 
   document.querySelectorAll('.tags-cloud span').forEach(span => {
     span.addEventListener('click', () => {
