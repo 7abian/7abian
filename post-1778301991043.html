@@ -85,35 +85,29 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 <p>主角与外星工程师洛基的跨物种友谊，建立在严谨的科学设定上。洛基的母星环境（高温、高压、高重力）决定了其基于汞的生物化学体系与独特的感官结构。然而，两个文明不约而同发展出相似的数学与物理法则，这恰好印证了科学哲学中的“数学实在论”——因为物理规律是全宇宙通用的，所以基于科学定律的沟通，终将成为不同智慧文明之间的桥梁。</p>
 
 </div>
-<div style="margin-top:3rem">
-<div id="waline"></div>
+<!-- 评论区 -->
+<div style="margin-top: 3rem;">
+<script src="https://giscus.app/client.js"
+        data-repo="7abian/7abian.github.io"
+        data-repo-id="R_kgDOSYQocQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOSYQocc4C8n0P"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="purple_dark"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
 </div>
 </div>
 <footer>
 <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
-<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-<script type="module">
-import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-init({
-el: '#waline',
-serverURL: 'https://ss-one-jade.vercel.app',
-lang: 'zh-CN',
-locale: {
-placeholder: '欢迎留言评论，支持 Markdown 语法...',
-sofa: '快来发表第一条评论吧~',
-},
-emoji: [
-'//unpkg.com/@waline/emojis@1.2.0/weibo',
-'//unpkg.com/@waline/emojis@1.2.0/bilibili',
-],
-dark: 'auto',
-meta: ['nick', 'mail'],
-requiredMeta: ['nick'],
-pageSize: 10,
-wordLimit: [0, 1000],
-});
-</script>
+
 <script>
 (async()=>{
 try{

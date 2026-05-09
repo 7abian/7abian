@@ -377,10 +377,23 @@ a:hover {
       <span class="nav-title">关于学习的一些思考</span>
     </a>
   </nav>
-
-    <!-- Waline 评论区 -->
+  <!-- 评论区 -->
   <div style="margin-top: 3rem;">
-    <div id="waline"></div>
+    <script src="https://giscus.app/client.js"
+            data-repo="7abian/7abian.github.io"
+            data-repo-id="R_kgDOSYQocQ"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOSYQocc4C8n0P"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="purple_dark"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+    </script>
   </div>
 </div>
 
@@ -388,29 +401,6 @@ a:hover {
   <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
 
-<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-<script type="module">
-  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-  
-  init({
-    el: '#waline',
-    serverURL: 'https://ss-one-jade.vercel.app',
-    lang: 'zh-CN',
-    locale: {
-      placeholder: '欢迎留言评论，支持 Markdown 语法...',
-      sofa: '快来发表第一条评论吧~',
-    },
-    emoji: [
-      '//unpkg.com/@waline/emojis@1.2.0/weibo',
-      '//unpkg.com/@waline/emojis@1.2.0/bilibili',
-    ],
-    dark: 'auto',
-    meta: ['nick', 'mail'],
-    requiredMeta: ['nick'],
-    pageSize: 10,
-    wordLimit: [0, 1000],
-  });
-</script>
 
 <script>
   window.addEventListener('scroll', () => {
