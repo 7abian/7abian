@@ -144,46 +144,48 @@
   }
 
   .hero h1 {
-    font-family: "JetBrains Mono", "Fira Code", Consolas, "SFMono-Regular", monospace;
-    font-size: clamp(2rem, 5vw, 4rem);
-    font-weight: 800;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: clamp(2.4rem, 5.8vw, 4.8rem);
+    font-weight: 300;
     margin-bottom: 1rem;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
     line-height: 1.15;
     color: var(--text);
   }
 
   .hero-title {
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: center;
-    gap: 0.18em;
-    padding: 0.18em 0.28em;
+    gap: 0.24em;
     color: #f8fafc;
-    text-shadow: 0 0 22px rgba(245, 166, 35, 0.2);
+    text-shadow: 0 0 22px rgba(245, 166, 35, 0.18);
   }
 
   .hero-title__prompt {
-    color: var(--accent-hover);
-    font-weight: 900;
-    text-shadow: 0 0 18px rgba(245, 166, 35, 0.45);
+    color: rgba(240, 237, 232, 0.78);
+    font-weight: 300;
   }
 
   .hero-title__dynamic {
+    min-width: 0;
     color: #ffffff;
     font-weight: 850;
     text-align: left;
+    background: linear-gradient(135deg, #ffffff 0%, #f5a623 45%, #e07b58 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hero-title__cursor {
     display: inline-block;
-    width: 0.55em;
-    height: 0.92em;
-    margin-left: 0.08em;
-    background: #f8fafc;
-    transform: translateY(0.04em);
-    animation: terminalCaret 1s steps(1, end) infinite;
-    box-shadow: 0 0 16px rgba(248, 250, 252, 0.55);
+    width: 0.055em;
+    height: 0.9em;
+    margin-left: 0.05em;
+    background: #111827;
+    transform: translateY(0.08em);
+    animation: terminalCaret 0.85s steps(1, end) infinite;
   }
 
   @keyframes terminalCaret {
@@ -528,7 +530,7 @@
 
   @media (max-width: 768px) {
     main { grid-template-columns: 1fr; }
-    .hero h1 { font-size: clamp(1.8rem, 8vw, 3rem); letter-spacing: -1px; }
+    .hero h1 { font-size: clamp(2rem, 10vw, 3.4rem); letter-spacing: -1px; }
     .hero { padding: 3.5rem 1.5rem 2rem; }
     main { padding: 1.5rem; }
     nav ul { gap: 1rem; }
@@ -565,8 +567,8 @@
 </header>
 
 <section class="hero" id="home">
-  <h1 class="hero-title" aria-label="命令行标题 Hello World">
-    <span class="hero-title__prompt" aria-hidden="true">&gt;_</span>
+  <h1 class="hero-title" aria-label="欢迎来到我的博客">
+    <span class="hero-title__prompt">欢迎来到</span>
     <span class="hero-title__dynamic" id="hero-typed"></span>
     <span class="hero-title__cursor" aria-hidden="true"></span>
   </h1>
@@ -768,22 +770,40 @@
     const target = document.getElementById('hero-typed');
     if (!target) return;
 
-    const words = ['Hello, World.'];
+    const words = ['我的博客', '技术笔记', '安全实验室', '思考角落'];
     target.textContent = '';
 
+    let wordIndex = 0;
     let charIndex = 0;
+    let deleting = false;
 
     const tick = () => {
-      const word = words[0];
+      const word = words[wordIndex];
       target.textContent = word.slice(0, charIndex);
+
+      if (deleting) {
+        if (charIndex > 0) {
+          charIndex -= 1;
+          setTimeout(tick, 65);
+          return;
+        }
+        deleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+        setTimeout(tick, 220);
+        return;
+      }
 
       if (charIndex < word.length) {
         charIndex += 1;
-        setTimeout(tick, 95);
+        setTimeout(tick, 105);
+        return;
       }
+
+      deleting = true;
+      setTimeout(tick, 1450);
     };
 
-    setTimeout(tick, 250);
+    setTimeout(tick, 260);
   })();
 
   // 标签过滤 + 搜索 + 分页
