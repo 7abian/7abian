@@ -144,53 +144,51 @@
   }
 
   .hero h1 {
-    font-size: clamp(2.1rem, 5.4vw, 4.2rem);
-    font-weight: 300;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, "SFMono-Regular", monospace;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 800;
     margin-bottom: 1rem;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
     line-height: 1.15;
     color: var(--text);
   }
 
   .hero-title {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: center;
-    gap: 0.28em;
-    flex-wrap: wrap;
+    gap: 0.18em;
+    padding: 0.18em 0.28em;
+    color: #f8fafc;
+    text-shadow: 0 0 22px rgba(245, 166, 35, 0.2);
   }
 
-  .hero-title__static {
-    color: rgba(240, 237, 232, 0.82);
-    font-weight: 300;
+  .hero-title__prompt {
+    color: var(--accent-hover);
+    font-weight: 900;
+    text-shadow: 0 0 18px rgba(245, 166, 35, 0.45);
   }
 
   .hero-title__dynamic {
-    min-width: 0;
     color: #ffffff;
     font-weight: 850;
     text-align: left;
-    text-shadow: 0 0 22px rgba(245, 166, 35, 0.22);
-    background: linear-gradient(135deg, #ffffff 0%, #f5a623 45%, #e07b58 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
   .hero-title__cursor {
     display: inline-block;
-    width: 0.08em;
-    height: 0.9em;
-    margin-left: 0.04em;
-    background: #0b0b12;
-    transform: translateY(0.08em);
-    animation: caretBlink 0.9s steps(1) infinite;
-    box-shadow: none;
+    width: 0.55em;
+    height: 0.92em;
+    margin-left: 0.08em;
+    background: #f8fafc;
+    transform: translateY(0.04em);
+    animation: terminalCaret 1s steps(1, end) infinite;
+    box-shadow: 0 0 16px rgba(248, 250, 252, 0.55);
   }
 
-  @keyframes caretBlink {
-    0%, 45% { opacity: 1; }
-    46%, 100% { opacity: 0; }
+  @keyframes terminalCaret {
+    0%, 48% { opacity: 1; }
+    49%, 100% { opacity: 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -530,7 +528,7 @@
 
   @media (max-width: 768px) {
     main { grid-template-columns: 1fr; }
-    .hero h1 { font-size: clamp(2rem, 10vw, 3.2rem); letter-spacing: -1px; }
+    .hero h1 { font-size: clamp(1.8rem, 8vw, 3rem); letter-spacing: -1px; }
     .hero { padding: 3.5rem 1.5rem 2rem; }
     main { padding: 1.5rem; }
     nav ul { gap: 1rem; }
@@ -567,8 +565,8 @@
 </header>
 
 <section class="hero" id="home">
-  <h1 class="hero-title" aria-label="欢迎来到我的博客">
-    <span class="hero-title__static">欢迎来到</span>
+  <h1 class="hero-title" aria-label="命令行标题 Hello World">
+    <span class="hero-title__prompt" aria-hidden="true">&gt;_</span>
     <span class="hero-title__dynamic" id="hero-typed"></span>
     <span class="hero-title__cursor" aria-hidden="true"></span>
   </h1>
@@ -770,37 +768,19 @@
     const target = document.getElementById('hero-typed');
     if (!target) return;
 
-    const words = ['我的博客', '技术笔记', '安全实验室', '思考角落'];
+    const words = ['Hello, World.'];
     target.textContent = '';
 
-    let wordIndex = 0;
     let charIndex = 0;
-    let deleting = false;
 
     const tick = () => {
-      const word = words[wordIndex];
+      const word = words[0];
       target.textContent = word.slice(0, charIndex);
 
-      if (deleting) {
-        if (charIndex > 0) {
-          charIndex -= 1;
-          setTimeout(tick, 75);
-          return;
-        }
-        deleting = false;
-        wordIndex = (wordIndex + 1) % words.length;
-        setTimeout(tick, 220);
-        return;
-      }
-
-      if (charIndex < words[wordIndex].length) {
+      if (charIndex < word.length) {
         charIndex += 1;
-        setTimeout(tick, 115);
-        return;
+        setTimeout(tick, 95);
       }
-
-      deleting = true;
-      setTimeout(tick, 1600);
     };
 
     setTimeout(tick, 250);
