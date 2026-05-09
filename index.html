@@ -144,7 +144,7 @@
   }
 
   .hero h1 {
-    font-size: clamp(2.5rem, 7vw, 5.6rem);
+    font-size: clamp(2.1rem, 5.4vw, 4.2rem);
     font-weight: 300;
     margin-bottom: 1rem;
     letter-spacing: -2px;
@@ -166,7 +166,7 @@
   }
 
   .hero-title__dynamic {
-    min-width: 4.2em;
+    min-width: 0;
     color: #ffffff;
     font-weight: 850;
     text-align: left;
@@ -182,10 +182,10 @@
     width: 0.08em;
     height: 0.9em;
     margin-left: 0.04em;
-    background: var(--accent-hover);
+    background: #0b0b12;
     transform: translateY(0.08em);
     animation: caretBlink 0.9s steps(1) infinite;
-    box-shadow: 0 0 18px rgba(245, 166, 35, 0.55);
+    box-shadow: none;
   }
 
   @keyframes caretBlink {
@@ -530,7 +530,7 @@
 
   @media (max-width: 768px) {
     main { grid-template-columns: 1fr; }
-    .hero h1 { font-size: clamp(2.4rem, 12vw, 4rem); letter-spacing: -1px; }
+    .hero h1 { font-size: clamp(2rem, 10vw, 3.2rem); letter-spacing: -1px; }
     .hero { padding: 3.5rem 1.5rem 2rem; }
     main { padding: 1.5rem; }
     nav ul { gap: 1rem; }
