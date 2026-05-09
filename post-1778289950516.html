@@ -55,7 +55,10 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 <div class="nav-container">
 <div style="display:flex;gap:1rem">
 <a href="index.html" class="back-btn">← 返回首页</a>
+<div class="admin-only" style="display:none;gap:1rem">
 <a href="admin.html?edit=post-1778289950516.html" class="back-btn">✏️ 编辑</a>
+<a href="#" onclick="deletePost('post-1778289950516.html');return false" class="back-btn">🗑️ 删除</a>
+</div>
 </div>
 <a href="index.html" class="logo">
 <img src="images/avatar02.jpg" alt="MRNOKK" class="avatar">
@@ -86,5 +89,32 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 <footer>
 <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
+<script>
+(async()=>{
+  try{
+    const resp=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+localStorage.getItem('github_token')}});
+    if(resp.ok){
+      const user=await resp.json();
+      if(user.login==='7abian'){
+        document.querySelectorAll('.admin-only').forEach(el=>el.style.display='flex');
+      }
+    }
+  }catch(e){}
+})();
+
+async function deletePost(fileName){
+  if(!confirm('确定要删除这篇文章吗？此操作不可恢复！'))return;
+  try{
+    const token=localStorage.getItem('github_token');
+    const url=`https://api.github.com/repos/7abian/7abian.github.io/contents/${fileName}`;
+    const resp=await fetch(url,{headers:{'Authorization':'token '+token}});
+    if(!resp.ok)throw new Error('获取文件信息失败');
+    const data=await resp.json();
+    await fetch(url,{method:'DELETE',headers:{'Authorization':'token '+token,'Content-Type':'application/json'},body:JSON.stringify({message:'Delete post: '+fileName,sha:data.sha,branch:'main'})});
+    alert('文章已删除');
+    window.location.href='index.html';
+  }catch(e){alert('删除失败: '+e.message);}
+}
+</script>
 </body>
 </html>
