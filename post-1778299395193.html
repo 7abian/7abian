@@ -42,6 +42,57 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,12,41,0.55);backdrop
 .post-content code{font-family:"JetBrains Mono","Fira Code",Consolas,monospace;font-size:0.87rem;color:#e2e8f0;line-height:1.7}
 .post-content p>code,.post-content li>code{background:rgba(255,255,255,0.1);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.86rem;color:#fbbf8a}
 footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;border-top:1px solid rgba(255,255,255,0.07);margin-top:1rem}
+  /* 管理员操作区域 */
+  .admin-actions {
+    display: none;
+    background: linear-gradient(135deg, rgba(224,123,88,0.15), rgba(245,166,35,0.15));
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+  .admin-actions.visible {
+    display: flex;
+  }
+  .admin-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .admin-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(224,123,88,0.4);
+  }
+  .admin-btn.delete {
+    background: #ef4444;
+  }
+  .admin-btn.delete:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+  }
+  @media (max-width: 768px) {
+    .admin-actions {
+      flex-direction: column;
+    }
+    .admin-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 @media (max-width:768px){.post-hero h1{font-size:1.8rem}.post-content{padding:1.5rem}.post-wrap{padding:2rem 1.2rem}}
 </style>
 </head>
@@ -111,7 +162,17 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 <p>《火星救援》的深层价值不在于百分百复刻科学定律，而在于<strong>展现了真正的科学思维：面对绝境时，用实证、计算和逻辑推演一步步求解问题。</strong> 它的可信度源于每一个方案都给出了符合直觉的因果链条，这种“解题过程”的真实感，远比场景本身的绝对正确更为珍贵。</p>
 
 </div>
-<div style="margin-top:3rem">
+  <!-- 管理员操作区域 -->
+  <div class="admin-actions" id="adminActions">
+    <span style="color: var(--accent); font-weight: 600; font-size: 1.1rem;">🔐 管理员操作</span>
+    <a href="admin.html?edit=post-1778299395193.html" class="admin-btn">
+      ✏️ 编辑文章
+    </a>
+    <button onclick="deletePost('post-1778299395193.html')" class="admin-btn delete">
+      🗑️ 删除文章
+    </button>
+  </div>
+  <div style="margin-top:3rem">
 <script src="https://giscus.app/client.js"
 data-repo="7abian/7abian.github.io"
 data-repo-id="R_kgDOSYQocQ"

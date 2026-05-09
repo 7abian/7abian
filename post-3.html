@@ -454,6 +454,11 @@ a:hover {
             el.style.display='flex';
             console.log('按钮已显示:', el);
           });
+          const adminActions = document.getElementById('adminActions');
+          if(adminActions){
+            adminActions.classList.add('visible');
+            console.log('✅ 文章管理操作区域已显示');
+          }
         }else{
           console.log('⚠️  非管理员用户，按钮保持隐藏');
         }

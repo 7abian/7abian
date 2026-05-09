@@ -408,6 +408,47 @@
   .footer-links a:hover { color: var(--text); }
 
   /* ── Responsive ── */
+  
+  /* 文章卡片管理员按钮 */
+  .article-admin-btns {
+    display: none;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .article-admin-btns.visible {
+    display: flex;
+  }
+  .article-admin-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .article-admin-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+  }
+  .article-admin-btn.delete {
+    background: #ef4444;
+  }
+  .article-admin-btn.delete:hover {
+    background: #dc2626;
+  }
+  article {
+    position: relative;
+  }
+
   @media (max-width: 768px) {
     main { grid-template-columns: 1fr; }
     .hero h1 { font-size: 2.2rem; letter-spacing: -1px; }
@@ -465,6 +506,15 @@
       <h2>《火星救援》科学理论专业分析</h2>
       <p>《火星救援》被誉为近十年最“硬”的科幻作品之一，其核心魅力在于：几乎所有生存方案都建立在真实且可验证的科学原理之上。本文将从物理学、化学、生物学和工程学四个维度，对其关键设定进行深度剖析。---...</p>
       <a href="post-1778299395193.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-1778299395193.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-1778299395193.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
 <article onclick="location.href='post-1778298289969.html'">
@@ -475,6 +525,15 @@
       <h2>《挽救计划》核心科学理论深度解析</h2>
       <p>《挽救计划》被誉为近年来最硬核的科幻作品之一，其魅力在于几乎所有天马行空的设定背后，都有牢固的科学理论或逻辑推演作为支撑。 一、噬星体：能量守恒下的生命推演故事的核心矛盾源于“噬星体”——...</p>
       <a href="post-1778298289969.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-1778298289969.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-1778298289969.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
 <article onclick="location.href='post-5.html'">
@@ -485,6 +544,15 @@
       <h2>渗透测试中的漏洞扫描：从自动化到深度利用的艺术</h2>
       <p>在渗透测试的完整杀伤链中，漏洞扫描常被误解为仅需点击"开始扫描"的机械化动作。实际上，高质量的扫描结果直接决定了后续漏洞利用的成败。</p>
       <a href="post-5.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-5.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-5.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
     <article onclick="location.href='post-1.html'">
@@ -495,6 +563,15 @@
       <h2>开始我的博客之旅</h2>
       <p>这是博客的第一篇文章。在这里，我会分享我在学习编程、网络安全、以及各种技术领域的心得体会。希望能与大家一起成长。</p>
       <a href="post-1.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-1.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-1.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
     <article onclick="location.href='post-2.html'">
@@ -505,6 +582,15 @@
       <h2>漏洞扫描的基础知识</h2>
       <p>漏洞扫描是网络安全工作中的重要一环。本文将介绍常见的漏洞扫描工具、扫描流程，以及如何分析扫描结果，帮助初学者快速入门。</p>
       <a href="post-2.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-2.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-2.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
     <article onclick="location.href='post-3.html'">
@@ -515,6 +601,15 @@
       <h2>HTML/CSS 入门指南</h2>
       <p>从零开始学习网页开发？这篇文章将带你了解 HTML 与 CSS 的基础知识，并通过实例演示如何创建一个简洁美观的页面。</p>
       <a href="post-3.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-3.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-3.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
     <article onclick="location.href='post-4.html'">
@@ -525,6 +620,15 @@
       <h2>关于学习的一些思考</h2>
       <p>持续学习是程序员的必修课。在快速变化的技术世界里，如何保持学习的动力与方向？分享一些个人的方法论。</p>
       <a href="post-4.html" class="read-more">阅读更多 →</a>
+    
+      <div class="article-admin-btns">
+        <a href="admin.html?edit=post-4.html" class="article-admin-btn" onclick="event.stopPropagation()">
+          ✏️ 编辑
+        </a>
+        <button class="article-admin-btn delete" onclick="event.stopPropagation(); deletePostFromIndex('post-4.html')">
+          🗑️ 删除
+        </button>
+      </div>
     </article>
 
   </div>
