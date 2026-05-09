@@ -42,7 +42,18 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,12,41,0.55);backdrop
 .post-content code{font-family:"JetBrains Mono","Fira Code",Consolas,monospace;font-size:0.87rem;color:#e2e8f0;line-height:1.7}
 .post-content p>code,.post-content li>code{background:rgba(255,255,255,0.1);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.86rem;color:#fbbf8a}
 footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;border-top:1px solid rgba(255,255,255,0.07);margin-top:1rem}
-  
+#cusdis_thread{background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,0.25)}
+#cusdis_thread .cusdis-header{color:var(--text);font-size:1.2rem;font-weight:600;margin-bottom:1.5rem}
+#cusdis_thread textarea{background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:8px;color:var(--text);padding:0.75rem 1rem;font-family:inherit;font-size:0.95rem;width:100%;min-height:100px;resize:vertical}
+#cusdis_thread textarea:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,0.08)}
+#cusdis_thread input{background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:8px;color:var(--text);padding:0.6rem 1rem;font-family:inherit;font-size:0.9rem}
+#cusdis_thread input:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,0.08)}
+#cusdis_thread button{background:var(--accent);color:white;border:none;border-radius:8px;padding:0.6rem 1.5rem;font-weight:500;cursor:pointer;transition:background 0.2s}
+#cusdis_thread button:hover{background:var(--accent-hover)}
+#cusdis_thread .cusdis-comment{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1rem;margin-bottom:1rem}
+#cusdis_thread .cusdis-comment-nickname{color:var(--accent);font-weight:600}
+#cusdis_thread .cusdis-comment-content{color:rgba(240,237,232,0.85);line-height:1.6;margin-top:0.5rem}
+
 @media (max-width:768px){.post-hero h1{font-size:1.8rem}.post-content{padding:1.5rem}.post-wrap{padding:2rem 1.2rem}}
 </style>
 </head>
