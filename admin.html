@@ -169,7 +169,7 @@ btn.textContent=isEdit?'更新中...':'发布中...';
 
 try{
 const fileName=isEdit?editFileName:`post-${Date.now()}.html`;
-const html=generatePostHTML(title,tag,content);
+const html=generatePostHTML(title,tag,content,fileName);
 let sha=null;
 if(isEdit){
 const token=localStorage.getItem('github_token');
@@ -192,7 +192,7 @@ btn.textContent='发布文章';
 }
 }
 
-function generatePostHTML(title,tag,mdContent){
+function generatePostHTML(title,tag,mdContent,fileName){
 const htmlContent=marked.parse(mdContent);
 const date=new Date().toISOString().split('T')[0];
 return `<!DOCTYPE html>
@@ -250,7 +250,10 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 </div>
 <header>
 <div class="nav-container">
+<div style="display:flex;gap:1rem">
 <a href="index.html" class="back-btn">← 返回首页</a>
+<a href="admin.html?edit=${fileName}" class="back-btn">✏️ 编辑</a>
+</div>
 <a href="index.html" class="logo">
 <img src="images/avatar02.jpg" alt="MRNOKK" class="avatar">
 <span>MRNOKK's Blog</span>
@@ -331,6 +334,15 @@ const statusDiv=document.getElementById('status');
 statusDiv.innerHTML=`<div class="status ${type}">${message}</div>`;
 setTimeout(()=>statusDiv.innerHTML='',8000);
 }
+
+window.addEventListener('DOMContentLoaded',()=>{
+const params=new URLSearchParams(window.location.search);
+const editFile=params.get('edit');
+if(editFile){
+document.getElementById('editFileName').value=editFile;
+loadArticle();
+}
+});
 </script>
 </body>
 </html>
