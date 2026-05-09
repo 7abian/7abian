@@ -371,6 +371,20 @@ const newCard=`
 const insertPos=indexHTML.indexOf('<article onclick=');
 if(insertPos===-1)throw new Error('无法找到文章插入位置');
 indexHTML=indexHTML.substring(0,insertPos)+newCard+'\n\n'+indexHTML.substring(insertPos);
+// 更新"近期文章"列表
+const articlePattern=/<article onclick="location\.href='([^']+)'">[\s\S]*?<h2>(.*?)<\/h2>/g;
+const articles=[];
+let match;
+while((match=articlePattern.exec(indexHTML))!==null){
+articles.push({file:match[1],title:match[2]});
+}
+const recentArticles=articles.slice(0,4);
+const recentListHTML=recentArticles.map(a=>`        <li><a href="${a.file}">${a.title}</a></li>`).join('\n');
+const recentPattern=/(<div class="widget">\s*<h3>近期文章<\/h3>\s*<ul>)[\s\S]*?(<\/ul>\s*<\/div>)/;
+if(recentPattern.test(indexHTML)){
+indexHTML=indexHTML.replace(recentPattern,`$1\n${recentListHTML}\n      $2`);
+}
+
 const putResp=await fetch(url,{
 method:'PUT',
 headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
