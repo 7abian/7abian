@@ -170,6 +170,7 @@
     color: #ffffff;
     font-weight: 850;
     text-align: left;
+    text-shadow: 0 0 22px rgba(245, 166, 35, 0.22);
     background: linear-gradient(135deg, #ffffff 0%, #f5a623 45%, #e07b58 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -568,7 +569,7 @@
 <section class="hero" id="home">
   <h1 class="hero-title" aria-label="欢迎来到我的博客">
     <span class="hero-title__static">欢迎来到</span>
-    <span class="hero-title__dynamic" id="hero-typed">我的博客</span>
+    <span class="hero-title__dynamic" id="hero-typed"></span>
     <span class="hero-title__cursor" aria-hidden="true"></span>
   </h1>
   <p>记录学习、生活与思考的点滴 — 关于代码、安全与日常。</p>
@@ -778,8 +779,8 @@
     }
 
     let wordIndex = 0;
-    let charIndex = words[0].length;
-    let deleting = true;
+    let charIndex = 0;
+    let deleting = false;
 
     const tick = () => {
       const word = words[wordIndex];
@@ -807,7 +808,7 @@
       setTimeout(tick, 1600);
     };
 
-    setTimeout(tick, 1400);
+    setTimeout(tick, 250);
   })();
 
   // 标签过滤 + 搜索 + 分页
