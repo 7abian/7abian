@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>博客管理后台</title>
+<style>
+:root{--accent:#e07b58;--glass-bg:rgba(255,255,255,0.07);--glass-border:rgba(255,255,255,0.13);--text:#f0ede8;--muted:rgba(240,237,232,0.55)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;color:var(--text);line-height:1.7;min-height:100vh;background:linear-gradient(135deg,#0f0c29 0%,#1e1b4b 40%,#2d1b69 70%,#1a0533 100%)}
+.container{max-width:1400px;margin:0 auto;padding:2rem}
+h1{font-size:2rem;margin-bottom:2rem;text-align:center}
+.auth-section{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:2rem;margin-bottom:2rem}
+.auth-section.hidden{display:none}
+.editor-section{display:none}
+.editor-section.active{display:block}
+.form-group{margin-bottom:1.5rem}
+.form-group label{display:block;margin-bottom:0.5rem;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:0.75rem;background:rgba(255,255,255,0.1);border:1px solid var(--glass-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:1rem}
+.form-group textarea{min-height:400px;font-family:'Courier New',monospace}
+.btn{background:var(--accent);color:white;border:none;padding:0.75rem 1.5rem;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;transition:background 0.2s}
+.btn:hover{background:#f5a623}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.preview{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:2rem;margin-top:2rem;max-height:600px;overflow-y:auto}
+.status{padding:1rem;border-radius:8px;margin-bottom:1rem}
+.status.success{background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4)}
+.status.error{background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media (max-width:968px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📝 博客管理后台</h1>
+<div id="status"></div>
+
+<div class="auth-section" id="authSection">
+<h2>GitHub 认证</h2>
+<p style="color:var(--muted);margin:1rem 0">首次使用需要配置 GitHub Personal Access Token</p>
+<div class="form-group">
+<label>GitHub Token</label>
+<input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+<small style="color:var(--muted)">
+<a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" style="color:var(--accent)">点击创建 Token</a> (需要 repo 权限)
+</small>
+</div>
+<button class="btn" onclick="saveToken()">保存并继续</button>
+</div>
+
+<div class="editor-section" id="editorSection">
+<div class="grid">
+<div>
+<h2>编写文章</h2>
+<div class="form-group">
+<label>文章标题</label>
+<input type="text" id="postTitle" placeholder="输入文章标题">
+</div>
+<div class="form-group">
+<label>标签</label>
+<select id="postTag">
+<option value="技术">技术</option>
+<option value="网络安全">网络安全</option>
+<option value="前端">前端</option>
+<option value="随笔">随笔</option>
+<option value="安全">安全</option>
+</select>
+</div>
+<div class="form-group">
+<label>文章内容 (Markdown)</label>
+<textarea id="postContent" placeholder="使用 Markdown 格式编写..."></textarea>
+</div>
+<button class="btn" onclick="publishPost()" id="publishBtn">发布文章</button>
+</div>
+<div>
+<h2>预览</h2>
+<div class="preview" id="preview">
+<p style="color:var(--muted)">在左侧编写内容后，点击预览按钮查看效果</p>
+</div>
+<button class="btn" onclick="previewPost()" style="margin-top:1rem">刷新预览</button>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const GITHUB_OWNER='7abian';
+const GITHUB_REPO='7abian.github.io';
+const GITHUB_BRANCH='main';
+
+window.onload=function(){
+const token=localStorage.getItem('github_token');
+if(token){
+document.getElementById('authSection').classList.add('hidden');
+document.getElementById('editorSection').classList.add('active');
+}
+};
+
+function saveToken(){
+const token=document.getElementById('githubToken').value.trim();
+if(!token){showStatus('请输入 GitHub Token','error');return}
+localStorage.setItem('github_token',token);
+document.getElementById('authSection').classList.add('hidden');
+document.getElementById('editorSection').classList.add('active');
+showStatus('Token 已保存','success');
+}
+
+function previewPost(){
+const content=document.getElementById('postContent').value;
+const html=marked.parse(content);
+document.getElementById('preview').innerHTML=html;
+}
+
+async function publishPost(){
+const title=document.getElementById('postTitle').value.trim();
+const tag=document.getElementById('postTag').value;
+const content=document.getElementById('postContent').value.trim();
+if(!title||!content){showStatus('请填写标题和内容','error');return}
+
+const btn=document.getElementById('publishBtn');
+btn.disabled=true;
+btn.textContent='发布中...';
+
+try{
+const postNum=Date.now();
+const fileName=`post-${postNum}.html`;
+const html=generatePostHTML(title,tag,content);
+await commitFile(fileName,html,`Add new post: ${title}`);
+showStatus('文章发布成功！请手动更新 index.html 添加文章卡片','success');
+document.getElementById('postTitle').value='';
+document.getElementById('postContent').value='';
+document.getElementById('preview').innerHTML='<p style="color:var(--muted)">预览区域</p>';
+}catch(error){
+showStatus('发布失败: '+error.message,'error');
+}finally{
+btn.disabled=false;
+btn.textContent='发布文章';
+}
+}
+
+function generatePostHTML(title,tag,mdContent){
+const htmlContent=marked.parse(mdContent);
+const date=new Date().toISOString().split('T')[0];
+return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${title} · MRNOKK's Blog</title>
+<style>
+:root{--accent:#e07b58;--accent-hover:#f5a623;--glass-bg:rgba(255,255,255,0.07);--glass-bg-hover:rgba(255,255,255,0.11);--glass-border:rgba(255,255,255,0.13);--glass-blur:blur(16px);--text:#f0ede8;--muted:rgba(240,237,232,0.55)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);line-height:1.7;min-height:100vh;overflow-x:hidden}
+.bg-wrap{position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,#0f0c29 0%,#1e1b4b 40%,#2d1b69 70%,#1a0533 100%)}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.3}
+.orb-1{width:500px;height:500px;background:radial-gradient(circle,#e07b58,transparent);top:-150px;left:-120px;animation:drift 12s ease-in-out infinite}
+.orb-2{width:400px;height:400px;background:radial-gradient(circle,#6c63ff,transparent);bottom:-100px;right:-100px;animation:drift 10s ease-in-out infinite reverse}
+.orb-3{width:300px;height:300px;background:radial-gradient(circle,#11998e,transparent);top:45%;left:55%;animation:drift 14s ease-in-out infinite;animation-delay:-5s}
+@keyframes drift{0%,100%{transform:translate(0,0)}33%{transform:translate(25px,-20px)}66%{transform:translate(-18px,18px)}}
+@media (prefers-reduced-motion:reduce){.bg-orb{animation:none}}
+header{position:sticky;top:0;z-index:100;background:rgba(15,12,41,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);padding:1rem 2rem}
+.nav-container{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.2rem;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent-hover));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;display:flex;align-items:center;gap:0.6rem}
+.avatar{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--glass-border);box-shadow:0 2px 8px rgba(0,0,0,0.3);flex-shrink:0}
+.back-btn{color:var(--muted);text-decoration:none;font-size:0.9rem;display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.back-btn:hover{color:var(--text)}
+.post-wrap{max-width:820px;margin:0 auto;padding:3rem 2rem 2rem}
+.post-hero{text-align:center;margin-bottom:2rem}
+.post-tag{background:rgba(224,123,88,0.16);color:var(--accent);padding:0.25rem 0.75rem;border-radius:20px;font-size:0.8rem;font-weight:500;border:1px solid rgba(224,123,88,0.28);display:inline-block;margin-bottom:1rem}
+.post-hero h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;line-height:1.25;margin-bottom:1rem;background:linear-gradient(135deg,#ffffff 0%,rgba(240,237,232,0.7) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.post-info{display:flex;justify-content:center;gap:1.5rem;color:var(--muted);font-size:0.85rem}
+.post-content{background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:16px;padding:2.5rem 3rem;box-shadow:0 4px 24px rgba(0,0,0,0.25)}
+.post-content h2{font-size:1.45rem;font-weight:700;margin:2.2rem 0 1rem;color:var(--text);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.1)}
+.post-content h2:first-child{margin-top:0}
+.post-content h3{font-size:1.1rem;font-weight:600;margin:1.6rem 0 0.75rem;color:rgba(240,237,232,0.9)}
+.post-content p{color:rgba(240,237,232,0.78);line-height:1.85;margin-bottom:1.2rem;font-size:1rem}
+.post-content ul,.post-content ol{color:rgba(240,237,232,0.78);padding-left:1.6rem;margin-bottom:1.2rem}
+.post-content li{margin-bottom:0.45rem;line-height:1.75}
+.post-content strong{color:var(--text);font-weight:600}
+.post-content em{font-style:italic}
+.post-content a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.post-content blockquote{border-left:3px solid var(--accent);padding:0.8rem 1.2rem;background:rgba(224,123,88,0.08);border-radius:0 8px 8px 0;margin:1.2rem 0;color:rgba(240,237,232,0.75);font-style:italic}
+.post-content hr{border:none;border-top:1px solid rgba(255,255,255,0.1);margin:2rem 0}
+.post-content pre{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.2rem 1.5rem;overflow-x:auto;margin:1.2rem 0}
+.post-content code{font-family:"JetBrains Mono","Fira Code",Consolas,monospace;font-size:0.87rem;color:#e2e8f0;line-height:1.7}
+.post-content p>code,.post-content li>code{background:rgba(255,255,255,0.1);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.86rem;color:#fbbf8a}
+footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;border-top:1px solid rgba(255,255,255,0.07);margin-top:1rem}
+@media (max-width:768px){.post-hero h1{font-size:1.8rem}.post-content{padding:1.5rem}.post-wrap{padding:2rem 1.2rem}}
+</style>
+</head>
+<body>
+<div class="bg-wrap" aria-hidden="true">
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+</div>
+<header>
+<div class="nav-container">
+<a href="index.html" class="back-btn">← 返回首页</a>
+<a href="index.html" class="logo">
+<img src="images/avatar02.jpg" alt="MRNOKK" class="avatar">
+<span>MRNOKK's Blog</span>
+</a>
+</div>
+</header>
+<div class="post-wrap">
+<div class="post-hero">
+<div class="post-tag">${tag}</div>
+<h1>${title}</h1>
+<div class="post-info">
+<span>${date}</span>
+<span>阅读约 5 分钟</span>
+</div>
+</div>
+<div class="post-content">
+${htmlContent}
+</div>
+</div>
+<footer>
+<p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
+</footer>
+</body>
+</html>`;
+}
+
+async function commitFile(path,content,message){
+const token=localStorage.getItem('github_token');
+const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+const response=await fetch(url,{
+method:'PUT',
+headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
+body:JSON.stringify({
+message:message,
+content:btoa(unescape(encodeURIComponent(content))),
+branch:GITHUB_BRANCH
+})
+});
+if(!response.ok)throw new Error('GitHub API 请求失败');
+return response.json();
+}
+
+function showStatus(message,type){
+const statusDiv=document.getElementById('status');
+statusDiv.innerHTML=`<div class="status ${type}">${message}</div>`;
+setTimeout(()=>statusDiv.innerHTML='',8000);
+}
+</script>
+</body>
+</html>
