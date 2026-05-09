@@ -175,6 +175,8 @@ if(resp.ok){
 const user=await resp.json();
 if(user.login==='7abian'){
 document.querySelectorAll('.admin-only').forEach(el=>el.style.display='flex');
+const adminActions=document.getElementById('adminActions');
+if(adminActions)adminActions.classList.add('visible');
 }
 }
 }catch(e){}
