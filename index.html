@@ -163,8 +163,9 @@
   }
 
   .hero-title__prompt {
-    color: rgba(240, 237, 232, 0.78);
-    font-weight: 300;
+    color: var(--accent-hover);
+    font-weight: 900;
+    text-shadow: 0 0 18px rgba(245, 166, 35, 0.45);
   }
 
   .hero-title__dynamic {
@@ -567,8 +568,8 @@
 </header>
 
 <section class="hero" id="home">
-  <h1 class="hero-title" aria-label="欢迎来到我的博客">
-    <span class="hero-title__prompt">欢迎来到</span>
+  <h1 class="hero-title" aria-label="命令行标题 Hello World">
+    <span class="hero-title__prompt" aria-hidden="true">&gt;_</span>
     <span class="hero-title__dynamic" id="hero-typed"></span>
     <span class="hero-title__cursor" aria-hidden="true"></span>
   </h1>
@@ -770,15 +771,14 @@
     const target = document.getElementById('hero-typed');
     if (!target) return;
 
-    const words = ['我的博客', '技术笔记', '安全实验室', '思考角落'];
+    const words = ['Hello, World.'];
     target.textContent = '';
 
-    let wordIndex = 0;
     let charIndex = 0;
     let deleting = false;
 
     const tick = () => {
-      const word = words[wordIndex];
+      const word = words[0];
       target.textContent = word.slice(0, charIndex);
 
       if (deleting) {
@@ -788,8 +788,7 @@
           return;
         }
         deleting = false;
-        wordIndex = (wordIndex + 1) % words.length;
-        setTimeout(tick, 220);
+        setTimeout(tick, 260);
         return;
       }
 
