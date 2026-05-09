@@ -1,0 +1,64 @@
+-- Waline PostgreSQL 数据库初始化脚本
+
+CREATE TABLE IF NOT EXISTS wl_comment (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  comment TEXT,
+  insertedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  ip VARCHAR(100),
+  link VARCHAR(255),
+  mail VARCHAR(255),
+  nick VARCHAR(255),
+  ua TEXT,
+  url VARCHAR(255),
+  pid INTEGER,
+  rid INTEGER,
+  sticky BOOLEAN DEFAULT FALSE,
+  status VARCHAR(50) DEFAULT 'approved',
+  like INTEGER DEFAULT 0,
+  orig TEXT,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wl_counter (
+  id SERIAL PRIMARY KEY,
+  time INTEGER DEFAULT 0,
+  reaction0 INTEGER DEFAULT 0,
+  reaction1 INTEGER DEFAULT 0,
+  reaction2 INTEGER DEFAULT 0,
+  reaction3 INTEGER DEFAULT 0,
+  reaction4 INTEGER DEFAULT 0,
+  reaction5 INTEGER DEFAULT 0,
+  reaction6 INTEGER DEFAULT 0,
+  reaction7 INTEGER DEFAULT 0,
+  reaction8 INTEGER DEFAULT 0,
+  url VARCHAR(255) UNIQUE,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS wl_users (
+  id SERIAL PRIMARY KEY,
+  display_name VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
+  password VARCHAR(255),
+  type VARCHAR(50) DEFAULT 'guest',
+  label VARCHAR(255),
+  url VARCHAR(255),
+  avatar VARCHAR(255),
+  github VARCHAR(255),
+  twitter VARCHAR(255),
+  facebook VARCHAR(255),
+  google VARCHAR(255),
+  weibo VARCHAR(255),
+  qq VARCHAR(255),
+  2fa VARCHAR(32),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 创建索引以提高查询性能
+CREATE INDEX IF NOT EXISTS idx_comment_url ON wl_comment(url);
+CREATE INDEX IF NOT EXISTS idx_comment_insertedAt ON wl_comment(insertedAt);
+CREATE INDEX IF NOT EXISTS idx_counter_url ON wl_counter(url);
