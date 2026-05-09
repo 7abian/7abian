@@ -112,38 +112,22 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.88rem;borde
 <p>《火星救援》的深层价值不在于百分百复刻科学定律，而在于<strong>展现了真正的科学思维：面对绝境时，用实证、计算和逻辑推演一步步求解问题。</strong> 它的可信度源于每一个方案都给出了符合直觉的因果链条，这种“解题过程”的真实感，远比场景本身的绝对正确更为珍贵。</p>
 
 </div>
-<!-- Waline 评论区 -->
+<!-- Cusdis 评论区 -->
 <div style="margin-top: 3rem;">
-<div id="waline"></div>
+<div id="cusdis_thread"
+  data-host="https://cusdis.com"
+  data-app-id="81b828ec-00e5-4585-83c3-e246a767a27a"
+  data-page-id="post-1778299395193"
+  data-page-url="https://7abian.github.io/post-1778299395193.html"
+  data-page-title="《火星救援》科学理论专业分析">
+</div>
 </div>
 </div>
 <footer>
 <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
 
-<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-<script type="module">
-  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-
-  init({
-    el: '#waline',
-    serverURL: 'https://ss-one-jade.vercel.app',
-    lang: 'zh-CN',
-    locale: {
-      placeholder: '欢迎留言评论，支持 Markdown 语法...',
-      sofa: '快来发表第一条评论吧~',
-    },
-    emoji: [
-      '//unpkg.com/@waline/emojis@1.2.0/weibo',
-      '//unpkg.com/@waline/emojis@1.2.0/bilibili',
-    ],
-    dark: 'auto',
-    meta: ['nick', 'mail'],
-    requiredMeta: ['nick'],
-    pageSize: 10,
-    wordLimit: [0, 1000],
-  });
-</script>
+<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 
 <script>
 (async()=>{

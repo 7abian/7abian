@@ -171,9 +171,15 @@
       <div class="nav-title">开始我的博客之旅</div>
     </a>
   </div>
-  <!-- Waline 评论区 -->
+  <!-- Cusdis 评论区 -->
   <div style="margin-top: 3rem;">
-    <div id="waline"></div>
+    <div id="cusdis_thread"
+      data-host="https://cusdis.com"
+      data-app-id="81b828ec-00e5-4585-83c3-e246a767a27a"
+      data-page-id="post-5"
+      data-page-url="https://7abian.github.io/post-5.html"
+      data-page-title="渗透测试中的漏洞扫描">
+    </div>
   </div>
 </div>
 
@@ -181,29 +187,7 @@
   <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
 
-<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-<script type="module">
-  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-
-  init({
-    el: '#waline',
-    serverURL: 'https://ss-one-jade.vercel.app',
-    lang: 'zh-CN',
-    locale: {
-      placeholder: '欢迎留言评论，支持 Markdown 语法...',
-      sofa: '快来发表第一条评论吧~',
-    },
-    emoji: [
-      '//unpkg.com/@waline/emojis@1.2.0/weibo',
-      '//unpkg.com/@waline/emojis@1.2.0/bilibili',
-    ],
-    dark: 'auto',
-    meta: ['nick', 'mail'],
-    requiredMeta: ['nick'],
-    pageSize: 10,
-    wordLimit: [0, 1000],
-  });
-</script>
+<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 
 <script>
 window.addEventListener('scroll', () => {
