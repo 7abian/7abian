@@ -144,15 +144,56 @@
   }
 
   .hero h1 {
-    font-size: 3rem;
-    font-weight: 800;
+    font-size: clamp(2.5rem, 7vw, 5.6rem);
+    font-weight: 300;
     margin-bottom: 1rem;
-    letter-spacing: -1.5px;
-    line-height: 1.2;
-    background: linear-gradient(135deg, #ffffff 0%, rgba(240, 237, 232, 0.65) 100%);
+    letter-spacing: -2px;
+    line-height: 1.15;
+    color: var(--text);
+  }
+
+  .hero-title {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.28em;
+    flex-wrap: wrap;
+  }
+
+  .hero-title__static {
+    color: rgba(240, 237, 232, 0.82);
+    font-weight: 300;
+  }
+
+  .hero-title__dynamic {
+    min-width: 4.2em;
+    color: #ffffff;
+    font-weight: 850;
+    text-align: left;
+    background: linear-gradient(135deg, #ffffff 0%, #f5a623 45%, #e07b58 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .hero-title__cursor {
+    display: inline-block;
+    width: 0.08em;
+    height: 0.9em;
+    margin-left: 0.04em;
+    background: var(--accent-hover);
+    transform: translateY(0.08em);
+    animation: caretBlink 0.9s steps(1) infinite;
+    box-shadow: 0 0 18px rgba(245, 166, 35, 0.55);
+  }
+
+  @keyframes caretBlink {
+    0%, 45% { opacity: 1; }
+    46%, 100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-title__cursor { animation: none; }
   }
 
   .hero p {
@@ -488,7 +529,7 @@
 
   @media (max-width: 768px) {
     main { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 2.2rem; letter-spacing: -1px; }
+    .hero h1 { font-size: clamp(2.4rem, 12vw, 4rem); letter-spacing: -1px; }
     .hero { padding: 3.5rem 1.5rem 2rem; }
     main { padding: 1.5rem; }
     nav ul { gap: 1rem; }
@@ -525,7 +566,11 @@
 </header>
 
 <section class="hero" id="home">
-  <h1>欢迎来到我的博客</h1>
+  <h1 class="hero-title" aria-label="欢迎来到我的博客">
+    <span class="hero-title__static">欢迎来到</span>
+    <span class="hero-title__dynamic" id="hero-typed">我的博客</span>
+    <span class="hero-title__cursor" aria-hidden="true"></span>
+  </h1>
   <p>记录学习、生活与思考的点滴 — 关于代码、安全与日常。</p>
 </section>
 
@@ -719,6 +764,52 @@
 </footer>
 
 <script>
+  // Hero 打字切换效果
+  (() => {
+    const target = document.getElementById('hero-typed');
+    if (!target) return;
+
+    const words = ['我的博客', '技术笔记', '安全实验室', '思考角落'];
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion) {
+      target.textContent = words[0];
+      return;
+    }
+
+    let wordIndex = 0;
+    let charIndex = words[0].length;
+    let deleting = true;
+
+    const tick = () => {
+      const word = words[wordIndex];
+      target.textContent = word.slice(0, charIndex);
+
+      if (deleting) {
+        if (charIndex > 0) {
+          charIndex -= 1;
+          setTimeout(tick, 75);
+          return;
+        }
+        deleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+        setTimeout(tick, 220);
+        return;
+      }
+
+      if (charIndex < words[wordIndex].length) {
+        charIndex += 1;
+        setTimeout(tick, 115);
+        return;
+      }
+
+      deleting = true;
+      setTimeout(tick, 1600);
+    };
+
+    setTimeout(tick, 1400);
+  })();
+
   // 标签过滤 + 搜索 + 分页
   const articles = document.querySelectorAll('.posts article');
   const noResults = document.getElementById('no-results');
