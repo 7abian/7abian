@@ -126,7 +126,8 @@ const postNum=Date.now();
 const fileName=`post-${postNum}.html`;
 const html=generatePostHTML(title,tag,content);
 await commitFile(fileName,html,`Add new post: ${title}`);
-showStatus('文章发布成功！请手动更新 index.html 添加文章卡片','success');
+await updateIndexPage(fileName,title,tag,content);
+showStatus('文章发布成功！首页已自动更新','success');
 document.getElementById('postTitle').value='';
 document.getElementById('postContent').value='';
 document.getElementById('preview').innerHTML='<p style="color:var(--muted)">预览区域</p>';
@@ -237,6 +238,41 @@ branch:GITHUB_BRANCH
 });
 if(!response.ok)throw new Error('GitHub API 请求失败');
 return response.json();
+}
+
+async function updateIndexPage(fileName,title,tag,content){
+const token=localStorage.getItem('github_token');
+const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/index.html`;
+const getResp=await fetch(url,{headers:{'Authorization':`token ${token}`}});
+if(!getResp.ok)throw new Error('无法读取 index.html');
+const data=await getResp.json();
+let indexHTML=decodeURIComponent(escape(atob(data.content)));
+const date=new Date().toISOString().split('T')[0];
+const excerpt=content.substring(0,100).replace(/[#*`\n]/g,'');
+const newCard=`
+    <article onclick="location.href='${fileName}'">
+      <div class="post-meta">
+        <span>${date}</span>
+        <span class="tag">${tag}</span>
+      </div>
+      <h2>${title}</h2>
+      <p>${excerpt}...</p>
+      <a href="${fileName}" class="read-more">阅读更多 →</a>
+    </article>`;
+const insertPos=indexHTML.indexOf('<article onclick=');
+if(insertPos===-1)throw new Error('无法找到文章插入位置');
+indexHTML=indexHTML.substring(0,insertPos)+newCard+'\n\n'+indexHTML.substring(insertPos);
+const putResp=await fetch(url,{
+method:'PUT',
+headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
+body:JSON.stringify({
+message:`Update index: add ${title}`,
+content:btoa(unescape(encodeURIComponent(indexHTML))),
+sha:data.sha,
+branch:GITHUB_BRANCH
+})
+});
+if(!putResp.ok)throw new Error('无法更新 index.html');
 }
 
 function showStatus(message,type){
