@@ -87,7 +87,6 @@
   footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 1rem; }
 
   /* ── 评论区样式 ── */
-  #comment-section { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
   .comment-form input, .comment-form textarea { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); padding: 0.75rem 1rem; font-family: inherit; font-size: 0.95rem; width: 100%; }
   .comment-form input:focus, .comment-form textarea:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
   .comment-form textarea { resize: vertical; min-height: 100px; }
@@ -207,27 +206,13 @@
     </a>
   </nav>
   <!-- 评论区 -->
-  <div style="margin-top: 3rem;">
-    <div id="comment-section">
-      <h3 style="color: var(--text); margin-bottom: 1.5rem;">评论</h3>
-      <div class="comment-form">
-        <input type="text" id="comment-name" placeholder="昵称（可选）" style="margin-bottom: 0.75rem;">
-        <textarea id="comment-content" placeholder="说点什么吧... 支持表情 😊" rows="4"></textarea>
-        <button onclick="submitComment('post-1')" class="submit-btn">发表评论</button>
-      </div>
-      <div id="comments-list" style="margin-top: 2rem;"></div>
-    </div>
-  </div>
+  <div id="comment-section" data-blog-comments data-page-path="post-1"></div>
 </div>
 
 <footer>
   <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
-
 <script src="comments.js"></script>
-<script>
-  loadComments('post-1');
-</script>
 
 <script>
   // 阅读进度条

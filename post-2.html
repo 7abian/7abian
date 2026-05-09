@@ -81,20 +81,6 @@
   .copy-btn.copied { color: #6ee7b7; border-color: #6ee7b7; }
 
   footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 1rem; }
-
-  /* ── Cusdis 评论区样式 ── */
-  #cusdis_thread { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
-  #cusdis_thread .cusdis-header { color: var(--text); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
-  #cusdis_thread textarea { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); padding: 0.75rem 1rem; font-family: inherit; font-size: 0.95rem; width: 100%; min-height: 100px; resize: vertical; }
-  #cusdis_thread textarea:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
-  #cusdis_thread input { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); padding: 0.6rem 1rem; font-family: inherit; font-size: 0.9rem; }
-  #cusdis_thread input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
-  #cusdis_thread button { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 0.6rem 1.5rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-  #cusdis_thread button:hover { background: var(--accent-hover); }
-  #cusdis_thread .cusdis-comment { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-  #cusdis_thread .cusdis-comment-nickname { color: var(--accent); font-weight: 600; }
-  #cusdis_thread .cusdis-comment-content { color: rgba(240,237,232,0.85); line-height: 1.6; margin-top: 0.5rem; }
-
   @media (max-width: 768px) {
     .post-hero h1 { font-size: 1.8rem; }
     .post-content { padding: 1.5rem; }
@@ -286,23 +272,16 @@ nikto -h http://target.com -o report.html -Format html</code></pre>
       <span class="nav-title">HTML/CSS 入门指南</span>
     </a>
   </nav>
-  <!-- Cusdis 评论区 -->
-  <div style="margin-top: 3rem;">
-    <div id="cusdis_thread"
-      data-host="https://cusdis.com"
-      data-app-id="81b828ec-00e5-4585-83c3-e246a767a27a"
-      data-page-id="post-2"
-      data-page-url="https://7abian.github.io/post-2.html"
-      data-page-title="漏洞扫描的基础知识">
-    </div>
-  </div>
+  <!-- 评论区 -->
+  <div id="comment-section" data-blog-comments data-page-path="post-2"></div>
+
 </div>
 
 <footer>
   <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
+<script src="comments.js"></script>
 
-<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 
 <script>
   window.addEventListener('scroll', () => {
