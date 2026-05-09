@@ -1,5 +1,6 @@
 -- Supabase 匿名评论系统初始化脚本
 -- 使用方法：Supabase Dashboard -> SQL Editor -> New query -> 粘贴并运行
+-- 这个版本可以重复运行；如果 policy 已存在，会先删除再创建。
 
 create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
@@ -20,15 +21,18 @@ create index if not exists comments_status_idx
 
 alter table public.comments enable row level security;
 
+drop policy if exists "Anyone can read approved comments" on public.comments;
+drop policy if exists "Anyone can create comments" on public.comments;
+drop policy if exists "Anyone can create pending comments" on public.comments;
+
 -- 允许任何访客读取已通过的评论
 create policy "Anyone can read approved comments"
   on public.comments
   for select
   using (status = 'approved');
 
--- 允许任何访客提交评论，但只能提交为 approved/pending/rejected 以外无法绕过 check；
--- with check 固定限制新评论必须是 approved。若你想开启人工审核，把 'approved' 改成 'pending'，
--- 同时前端提交后会提示等待审核。
+-- 允许任何访客提交评论。
+-- 当前配置为直接通过并显示；如果你想开启人工审核，请看下方可选版本。
 create policy "Anyone can create comments"
   on public.comments
   for insert
@@ -39,7 +43,10 @@ create policy "Anyone can create comments"
     and (email is null or length(trim(email)) <= 120)
   );
 
--- 可选：如果要人工审核，把上面的 insert policy 删除后运行这个：
+-- 可选：如果要人工审核：
+-- 1. 把上面的 "Anyone can create comments" policy 删除或注释掉。
+-- 2. 在 comments.js 里把 COMMENT_STATUS_ON_SUBMIT 改成 'pending'。
+-- 3. 取消注释下面这个 policy 后运行。
 -- create policy "Anyone can create pending comments"
 --   on public.comments
 --   for insert

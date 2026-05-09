@@ -1,5 +1,5 @@
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLIC_KEY';
+const SUPABASE_URL = 'https://voumtuvtbrkbdmkqfmzy.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_KO5mI0KB4Ou5uvuTDAjk0A_eU63pJYu';
 const COMMENTS_TABLE = 'comments';
 const COMMENT_STATUS_ON_SUBMIT = 'approved';
 
