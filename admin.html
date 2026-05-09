@@ -48,6 +48,13 @@ h1{font-size:2rem;margin-bottom:2rem;text-align:center}
 </div>
 
 <div class="editor-section" id="editorSection">
+<div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;margin-bottom:2rem">
+<h3 style="margin-bottom:1rem">编辑已有文章</h3>
+<div style="display:flex;gap:1rem">
+<input type="text" id="editFileName" placeholder="输入文章文件名，如: post-1778289950516.html" style="flex:1;padding:0.75rem;background:rgba(255,255,255,0.1);border:1px solid var(--glass-border);border-radius:8px;color:var(--text)">
+<button class="btn" onclick="loadArticle()">加载文章</button>
+</div>
+</div>
 <div class="grid">
 <div>
 <h2>编写文章</h2>
@@ -111,6 +118,43 @@ const html=marked.parse(content);
 document.getElementById('preview').innerHTML=html;
 }
 
+async function loadArticle(){
+const fileName=document.getElementById('editFileName').value.trim();
+if(!fileName){showStatus('请输入文章文件名','error');return}
+try{
+const token=localStorage.getItem('github_token');
+const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${fileName}`;
+const resp=await fetch(url,{headers:{'Authorization':`token ${token}`}});
+if(!resp.ok)throw new Error('文章不存在');
+const data=await resp.json();
+const html=decodeURIComponent(escape(atob(data.content)));
+const titleMatch=html.match(/<h1>(.*?)<\/h1>/);
+const tagMatch=html.match(/<div class="post-tag">(.*?)<\/div>/);
+const contentMatch=html.match(/<div class="post-content">\s*([\s\S]*?)\s*<\/div>\s*<\/div>/);
+if(titleMatch)document.getElementById('postTitle').value=titleMatch[1];
+if(tagMatch)document.getElementById('postTag').value=tagMatch[1];
+if(contentMatch){
+const htmlContent=contentMatch[1];
+document.getElementById('postContent').value=htmlToMarkdown(htmlContent);
+}
+showStatus('文章加载成功','success');
+}catch(error){
+showStatus('加载失败: '+error.message,'error');
+}
+}
+
+function htmlToMarkdown(html){
+return html.replace(/<h2>(.*?)<\/h2>/g,'## $1\n')
+.replace(/<h3>(.*?)<\/h3>/g,'### $1\n')
+.replace(/<p>(.*?)<\/p>/g,'$1\n\n')
+.replace(/<strong>(.*?)<\/strong>/g,'**$1**')
+.replace(/<em>(.*?)<\/em>/g,'*$1*')
+.replace(/<code>(.*?)<\/code>/g,'`$1`')
+.replace(/<ul>/g,'').replace(/<\/ul>/g,'')
+.replace(/<li>(.*?)<\/li>/g,'- $1\n')
+.replace(/<[^>]+>/g,'').trim();
+}
+
 async function publishPost(){
 const title=document.getElementById('postTitle').value.trim();
 const tag=document.getElementById('postTag').value;
@@ -119,20 +163,29 @@ if(!title||!content){showStatus('请填写标题和内容','error');return}
 
 const btn=document.getElementById('publishBtn');
 btn.disabled=true;
-btn.textContent='发布中...';
+const editFileName=document.getElementById('editFileName').value.trim();
+const isEdit=!!editFileName;
+btn.textContent=isEdit?'更新中...':'发布中...';
 
 try{
-const postNum=Date.now();
-const fileName=`post-${postNum}.html`;
+const fileName=isEdit?editFileName:`post-${Date.now()}.html`;
 const html=generatePostHTML(title,tag,content);
-await commitFile(fileName,html,`Add new post: ${title}`);
-await updateIndexPage(fileName,title,tag,content);
-showStatus('文章发布成功！首页已自动更新','success');
+let sha=null;
+if(isEdit){
+const token=localStorage.getItem('github_token');
+const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${fileName}`;
+const resp=await fetch(url,{headers:{'Authorization':`token ${token}`}});
+if(resp.ok){const data=await resp.json();sha=data.sha;}
+}
+await commitFile(fileName,html,isEdit?`Update post: ${title}`:`Add new post: ${title}`,sha);
+if(!isEdit)await updateIndexPage(fileName,title,tag,content);
+showStatus(isEdit?'文章更新成功！':'文章发布成功！首页已自动更新','success');
 document.getElementById('postTitle').value='';
 document.getElementById('postContent').value='';
+document.getElementById('editFileName').value='';
 document.getElementById('preview').innerHTML='<p style="color:var(--muted)">预览区域</p>';
 }catch(error){
-showStatus('发布失败: '+error.message,'error');
+showStatus((isEdit?'更新':'发布')+'失败: '+error.message,'error');
 }finally{
 btn.disabled=false;
 btn.textContent='发布文章';
@@ -224,17 +277,15 @@ ${htmlContent}
 </html>`;
 }
 
-async function commitFile(path,content,message){
+async function commitFile(path,content,message,sha){
 const token=localStorage.getItem('github_token');
 const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+const body={message:message,content:btoa(unescape(encodeURIComponent(content))),branch:GITHUB_BRANCH};
+if(sha)body.sha=sha;
 const response=await fetch(url,{
 method:'PUT',
 headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
-body:JSON.stringify({
-message:message,
-content:btoa(unescape(encodeURIComponent(content))),
-branch:GITHUB_BRANCH
-})
+body:JSON.stringify(body)
 });
 if(!response.ok)throw new Error('GitHub API 请求失败');
 return response.json();
