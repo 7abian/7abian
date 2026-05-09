@@ -86,18 +86,18 @@
 
   footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 1rem; }
 
-  /* ── Cusdis 评论区样式 ── */
-  #cusdis_thread { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
-  #cusdis_thread .cusdis-header { color: var(--text); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
-  #cusdis_thread textarea { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); padding: 0.75rem 1rem; font-family: inherit; font-size: 0.95rem; width: 100%; min-height: 100px; resize: vertical; }
-  #cusdis_thread textarea:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
-  #cusdis_thread input { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); padding: 0.6rem 1rem; font-family: inherit; font-size: 0.9rem; }
-  #cusdis_thread input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
-  #cusdis_thread button { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 0.6rem 1.5rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-  #cusdis_thread button:hover { background: var(--accent-hover); }
-  #cusdis_thread .cusdis-comment { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-  #cusdis_thread .cusdis-comment-nickname { color: var(--accent); font-weight: 600; }
-  #cusdis_thread .cusdis-comment-content { color: rgba(240,237,232,0.85); line-height: 1.6; margin-top: 0.5rem; }
+  /* ── 评论区样式 ── */
+  #comment-section { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+  .comment-form input, .comment-form textarea { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); padding: 0.75rem 1rem; font-family: inherit; font-size: 0.95rem; width: 100%; }
+  .comment-form input:focus, .comment-form textarea:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.08); }
+  .comment-form textarea { resize: vertical; min-height: 100px; }
+  .submit-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 0.6rem 1.5rem; font-weight: 500; cursor: pointer; transition: background 0.2s; margin-top: 0.75rem; }
+  .submit-btn:hover { background: var(--accent-hover); }
+  .comment-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+  .comment-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+  .comment-author { color: var(--accent); font-weight: 600; }
+  .comment-time { color: var(--muted); font-size: 0.85rem; }
+  .comment-content { color: rgba(240,237,232,0.85); line-height: 1.6; }
 
   @media (max-width: 768px) {
     .post-hero h1 { font-size: 1.8rem; }
@@ -206,14 +206,16 @@
       <span class="nav-title">漏洞扫描的基础知识</span>
     </a>
   </nav>
-  <!-- Cusdis 评论区 -->
+  <!-- 评论区 -->
   <div style="margin-top: 3rem;">
-    <div id="cusdis_thread"
-      data-host="https://cusdis.com"
-      data-app-id="81b828ec-00e5-4585-83c3-e246a767a27a"
-      data-page-id="post-1"
-      data-page-url="https://7abian.github.io/post-1.html"
-      data-page-title="开始我的博客之旅">
+    <div id="comment-section">
+      <h3 style="color: var(--text); margin-bottom: 1.5rem;">评论</h3>
+      <div class="comment-form">
+        <input type="text" id="comment-name" placeholder="昵称（可选）" style="margin-bottom: 0.75rem;">
+        <textarea id="comment-content" placeholder="说点什么吧... 支持表情 😊" rows="4"></textarea>
+        <button onclick="submitComment('post-1')" class="submit-btn">发表评论</button>
+      </div>
+      <div id="comments-list" style="margin-top: 2rem;"></div>
     </div>
   </div>
 </div>
@@ -222,7 +224,10 @@
   <p>&copy; 2026 MRNOKK's Blog. 用心记录，分享成长。</p>
 </footer>
 
-<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+<script src="comments.js"></script>
+<script>
+  loadComments('post-1');
+</script>
 
 <script>
   // 阅读进度条
